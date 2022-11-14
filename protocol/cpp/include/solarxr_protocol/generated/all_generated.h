@@ -52,7 +52,36 @@ struct FirmwareStatusMask;
 struct FirmwareStatusMaskBuilder;
 
 }  // namespace hardware_info
+}  // namespace datatypes
 
+namespace device {
+namespace pairing {
+
+struct DiscoverRequest;
+struct DiscoverRequestBuilder;
+
+struct PairingInfo;
+struct PairingInfoBuilder;
+
+struct DeviceFeatureInfo;
+struct DeviceFeatureInfoBuilder;
+
+struct DeviceSensorInfo;
+struct DeviceSensorInfoBuilder;
+
+struct ImuFeatureInfo;
+struct ImuFeatureInfoBuilder;
+
+struct PairingRequest;
+struct PairingRequestBuilder;
+
+struct PairingResponse;
+struct PairingResponseBuilder;
+
+}  // namespace pairing
+}  // namespace device
+
+namespace datatypes {
 namespace math {
 
 struct Quat;
@@ -62,6 +91,35 @@ struct Vec3f;
 }  // namespace math
 }  // namespace datatypes
 
+namespace device {
+namespace packets {
+
+struct DeviceStatus;
+struct DeviceStatusBuilder;
+
+struct ImuStatus;
+struct ImuStatusBuilder;
+
+struct ImuMovement;
+struct ImuMovementBuilder;
+
+}  // namespace packets
+
+struct ServerBoundMessageHeader;
+struct ServerBoundMessageHeaderBuilder;
+
+struct DeviceBoundMessageHeader;
+struct DeviceBoundMessageHeaderBuilder;
+
+struct PingRequest;
+struct PingRequestBuilder;
+
+struct PingResponse;
+struct PingResponseBuilder;
+
+}  // namespace device
+
+namespace application {
 namespace data_feed {
 namespace tracker {
 
@@ -213,6 +271,15 @@ struct OverlayDisplayModeChangeRequestBuilder;
 struct OverlayDisplayModeResponse;
 struct OverlayDisplayModeResponseBuilder;
 
+struct DetectedDevice;
+struct DetectedDeviceBuilder;
+
+struct DetectedDevicesRequest;
+struct DetectedDevicesRequestBuilder;
+
+struct PairDeviceRequest;
+struct PairDeviceRequestBuilder;
+
 }  // namespace rpc
 
 namespace pub_sub {
@@ -245,6 +312,8 @@ struct KeyValuesBuilder;
 
 struct MessageBundle;
 struct MessageBundleBuilder;
+
+}  // namespace application
 
 namespace datatypes {
 
@@ -283,6 +352,39 @@ inline const char *EnumNameFirmwareErrorCode(FirmwareErrorCode e) {
   if (flatbuffers::IsOutRange(e, FirmwareErrorCode::Other, FirmwareErrorCode::ImuError)) return "";
   const size_t index = static_cast<size_t>(e);
   return EnumNamesFirmwareErrorCode()[index];
+}
+
+enum class ImuErrorCode : uint8_t {
+  NONE = 0,
+  I2C_ERROR = 1,
+  TIMEOUT = 2,
+  MIN = NONE,
+  MAX = TIMEOUT
+};
+
+inline const ImuErrorCode (&EnumValuesImuErrorCode())[3] {
+  static const ImuErrorCode values[] = {
+    ImuErrorCode::NONE,
+    ImuErrorCode::I2C_ERROR,
+    ImuErrorCode::TIMEOUT
+  };
+  return values;
+}
+
+inline const char * const *EnumNamesImuErrorCode() {
+  static const char * const names[4] = {
+    "NONE",
+    "I2C_ERROR",
+    "TIMEOUT",
+    nullptr
+  };
+  return names;
+}
+
+inline const char *EnumNameImuErrorCode(ImuErrorCode e) {
+  if (flatbuffers::IsOutRange(e, ImuErrorCode::NONE, ImuErrorCode::TIMEOUT)) return "";
+  const size_t index = static_cast<size_t>(e);
+  return EnumNamesImuErrorCode()[index];
 }
 
 /// Used for filtering tracker rotations in software
@@ -633,6 +735,175 @@ inline const char *EnumNameImuType(ImuType e) {
 }  // namespace hardware_info
 }  // namespace datatypes
 
+namespace device {
+namespace pairing {
+
+enum class PairingResponseError : uint8_t {
+  NONE = 0,
+  ALREADY_PAIRED = 1,
+  MIN = NONE,
+  MAX = ALREADY_PAIRED
+};
+
+inline const PairingResponseError (&EnumValuesPairingResponseError())[2] {
+  static const PairingResponseError values[] = {
+    PairingResponseError::NONE,
+    PairingResponseError::ALREADY_PAIRED
+  };
+  return values;
+}
+
+inline const char * const *EnumNamesPairingResponseError() {
+  static const char * const names[3] = {
+    "NONE",
+    "ALREADY_PAIRED",
+    nullptr
+  };
+  return names;
+}
+
+inline const char *EnumNamePairingResponseError(PairingResponseError e) {
+  if (flatbuffers::IsOutRange(e, PairingResponseError::NONE, PairingResponseError::ALREADY_PAIRED)) return "";
+  const size_t index = static_cast<size_t>(e);
+  return EnumNamesPairingResponseError()[index];
+}
+
+}  // namespace pairing
+
+enum class ServerBoundMessage : uint8_t {
+  NONE = 0,
+  solarxr_protocol_device_pairing_PairingInfo = 1,
+  solarxr_protocol_device_pairing_PairingResponse = 2,
+  PingResponse = 3,
+  solarxr_protocol_device_packets_DeviceStatus = 4,
+  solarxr_protocol_device_packets_ImuStatus = 5,
+  solarxr_protocol_device_packets_ImuMovement = 6,
+  MIN = NONE,
+  MAX = solarxr_protocol_device_packets_ImuMovement
+};
+
+inline const ServerBoundMessage (&EnumValuesServerBoundMessage())[7] {
+  static const ServerBoundMessage values[] = {
+    ServerBoundMessage::NONE,
+    ServerBoundMessage::solarxr_protocol_device_pairing_PairingInfo,
+    ServerBoundMessage::solarxr_protocol_device_pairing_PairingResponse,
+    ServerBoundMessage::PingResponse,
+    ServerBoundMessage::solarxr_protocol_device_packets_DeviceStatus,
+    ServerBoundMessage::solarxr_protocol_device_packets_ImuStatus,
+    ServerBoundMessage::solarxr_protocol_device_packets_ImuMovement
+  };
+  return values;
+}
+
+inline const char * const *EnumNamesServerBoundMessage() {
+  static const char * const names[8] = {
+    "NONE",
+    "solarxr_protocol_device_pairing_PairingInfo",
+    "solarxr_protocol_device_pairing_PairingResponse",
+    "PingResponse",
+    "solarxr_protocol_device_packets_DeviceStatus",
+    "solarxr_protocol_device_packets_ImuStatus",
+    "solarxr_protocol_device_packets_ImuMovement",
+    nullptr
+  };
+  return names;
+}
+
+inline const char *EnumNameServerBoundMessage(ServerBoundMessage e) {
+  if (flatbuffers::IsOutRange(e, ServerBoundMessage::NONE, ServerBoundMessage::solarxr_protocol_device_packets_ImuMovement)) return "";
+  const size_t index = static_cast<size_t>(e);
+  return EnumNamesServerBoundMessage()[index];
+}
+
+template<typename T> struct ServerBoundMessageTraits {
+  static const ServerBoundMessage enum_value = ServerBoundMessage::NONE;
+};
+
+template<> struct ServerBoundMessageTraits<solarxr_protocol::device::pairing::PairingInfo> {
+  static const ServerBoundMessage enum_value = ServerBoundMessage::solarxr_protocol_device_pairing_PairingInfo;
+};
+
+template<> struct ServerBoundMessageTraits<solarxr_protocol::device::pairing::PairingResponse> {
+  static const ServerBoundMessage enum_value = ServerBoundMessage::solarxr_protocol_device_pairing_PairingResponse;
+};
+
+template<> struct ServerBoundMessageTraits<solarxr_protocol::device::PingResponse> {
+  static const ServerBoundMessage enum_value = ServerBoundMessage::PingResponse;
+};
+
+template<> struct ServerBoundMessageTraits<solarxr_protocol::device::packets::DeviceStatus> {
+  static const ServerBoundMessage enum_value = ServerBoundMessage::solarxr_protocol_device_packets_DeviceStatus;
+};
+
+template<> struct ServerBoundMessageTraits<solarxr_protocol::device::packets::ImuStatus> {
+  static const ServerBoundMessage enum_value = ServerBoundMessage::solarxr_protocol_device_packets_ImuStatus;
+};
+
+template<> struct ServerBoundMessageTraits<solarxr_protocol::device::packets::ImuMovement> {
+  static const ServerBoundMessage enum_value = ServerBoundMessage::solarxr_protocol_device_packets_ImuMovement;
+};
+
+bool VerifyServerBoundMessage(flatbuffers::Verifier &verifier, const void *obj, ServerBoundMessage type);
+bool VerifyServerBoundMessageVector(flatbuffers::Verifier &verifier, const flatbuffers::Vector<flatbuffers::Offset<void>> *values, const flatbuffers::Vector<ServerBoundMessage> *types);
+
+enum class DeviceBoundMessage : uint8_t {
+  NONE = 0,
+  solarxr_protocol_device_pairing_DiscoverRequest = 1,
+  solarxr_protocol_device_pairing_PairingRequest = 2,
+  PingRequest = 3,
+  MIN = NONE,
+  MAX = PingRequest
+};
+
+inline const DeviceBoundMessage (&EnumValuesDeviceBoundMessage())[4] {
+  static const DeviceBoundMessage values[] = {
+    DeviceBoundMessage::NONE,
+    DeviceBoundMessage::solarxr_protocol_device_pairing_DiscoverRequest,
+    DeviceBoundMessage::solarxr_protocol_device_pairing_PairingRequest,
+    DeviceBoundMessage::PingRequest
+  };
+  return values;
+}
+
+inline const char * const *EnumNamesDeviceBoundMessage() {
+  static const char * const names[5] = {
+    "NONE",
+    "solarxr_protocol_device_pairing_DiscoverRequest",
+    "solarxr_protocol_device_pairing_PairingRequest",
+    "PingRequest",
+    nullptr
+  };
+  return names;
+}
+
+inline const char *EnumNameDeviceBoundMessage(DeviceBoundMessage e) {
+  if (flatbuffers::IsOutRange(e, DeviceBoundMessage::NONE, DeviceBoundMessage::PingRequest)) return "";
+  const size_t index = static_cast<size_t>(e);
+  return EnumNamesDeviceBoundMessage()[index];
+}
+
+template<typename T> struct DeviceBoundMessageTraits {
+  static const DeviceBoundMessage enum_value = DeviceBoundMessage::NONE;
+};
+
+template<> struct DeviceBoundMessageTraits<solarxr_protocol::device::pairing::DiscoverRequest> {
+  static const DeviceBoundMessage enum_value = DeviceBoundMessage::solarxr_protocol_device_pairing_DiscoverRequest;
+};
+
+template<> struct DeviceBoundMessageTraits<solarxr_protocol::device::pairing::PairingRequest> {
+  static const DeviceBoundMessage enum_value = DeviceBoundMessage::solarxr_protocol_device_pairing_PairingRequest;
+};
+
+template<> struct DeviceBoundMessageTraits<solarxr_protocol::device::PingRequest> {
+  static const DeviceBoundMessage enum_value = DeviceBoundMessage::PingRequest;
+};
+
+bool VerifyDeviceBoundMessage(flatbuffers::Verifier &verifier, const void *obj, DeviceBoundMessage type);
+bool VerifyDeviceBoundMessageVector(flatbuffers::Verifier &verifier, const flatbuffers::Vector<flatbuffers::Offset<void>> *values, const flatbuffers::Vector<DeviceBoundMessage> *types);
+
+}  // namespace device
+
+namespace application {
 namespace data_feed {
 
 enum class DataFeedMessage : uint8_t {
@@ -678,19 +949,19 @@ template<typename T> struct DataFeedMessageTraits {
   static const DataFeedMessage enum_value = DataFeedMessage::NONE;
 };
 
-template<> struct DataFeedMessageTraits<solarxr_protocol::data_feed::PollDataFeed> {
+template<> struct DataFeedMessageTraits<solarxr_protocol::application::data_feed::PollDataFeed> {
   static const DataFeedMessage enum_value = DataFeedMessage::PollDataFeed;
 };
 
-template<> struct DataFeedMessageTraits<solarxr_protocol::data_feed::StartDataFeed> {
+template<> struct DataFeedMessageTraits<solarxr_protocol::application::data_feed::StartDataFeed> {
   static const DataFeedMessage enum_value = DataFeedMessage::StartDataFeed;
 };
 
-template<> struct DataFeedMessageTraits<solarxr_protocol::data_feed::DataFeedUpdate> {
+template<> struct DataFeedMessageTraits<solarxr_protocol::application::data_feed::DataFeedUpdate> {
   static const DataFeedMessage enum_value = DataFeedMessage::DataFeedUpdate;
 };
 
-template<> struct DataFeedMessageTraits<solarxr_protocol::data_feed::DataFeedConfig> {
+template<> struct DataFeedMessageTraits<solarxr_protocol::application::data_feed::DataFeedConfig> {
   static const DataFeedMessage enum_value = DataFeedMessage::DataFeedConfig;
 };
 
@@ -729,11 +1000,13 @@ enum class RpcMessage : uint8_t {
   SerialTrackerRebootRequest = 24,
   SerialTrackerGetInfoRequest = 25,
   SerialTrackerFactoryResetRequest = 26,
+  DetectedDevicesRequest = 27,
+  PairDeviceRequest = 28,
   MIN = NONE,
-  MAX = SerialTrackerFactoryResetRequest
+  MAX = PairDeviceRequest
 };
 
-inline const RpcMessage (&EnumValuesRpcMessage())[27] {
+inline const RpcMessage (&EnumValuesRpcMessage())[29] {
   static const RpcMessage values[] = {
     RpcMessage::NONE,
     RpcMessage::HeartbeatRequest,
@@ -761,13 +1034,15 @@ inline const RpcMessage (&EnumValuesRpcMessage())[27] {
     RpcMessage::OverlayDisplayModeResponse,
     RpcMessage::SerialTrackerRebootRequest,
     RpcMessage::SerialTrackerGetInfoRequest,
-    RpcMessage::SerialTrackerFactoryResetRequest
+    RpcMessage::SerialTrackerFactoryResetRequest,
+    RpcMessage::DetectedDevicesRequest,
+    RpcMessage::PairDeviceRequest
   };
   return values;
 }
 
 inline const char * const *EnumNamesRpcMessage() {
-  static const char * const names[28] = {
+  static const char * const names[30] = {
     "NONE",
     "HeartbeatRequest",
     "HeartbeatResponse",
@@ -795,13 +1070,15 @@ inline const char * const *EnumNamesRpcMessage() {
     "SerialTrackerRebootRequest",
     "SerialTrackerGetInfoRequest",
     "SerialTrackerFactoryResetRequest",
+    "DetectedDevicesRequest",
+    "PairDeviceRequest",
     nullptr
   };
   return names;
 }
 
 inline const char *EnumNameRpcMessage(RpcMessage e) {
-  if (flatbuffers::IsOutRange(e, RpcMessage::NONE, RpcMessage::SerialTrackerFactoryResetRequest)) return "";
+  if (flatbuffers::IsOutRange(e, RpcMessage::NONE, RpcMessage::PairDeviceRequest)) return "";
   const size_t index = static_cast<size_t>(e);
   return EnumNamesRpcMessage()[index];
 }
@@ -810,108 +1087,116 @@ template<typename T> struct RpcMessageTraits {
   static const RpcMessage enum_value = RpcMessage::NONE;
 };
 
-template<> struct RpcMessageTraits<solarxr_protocol::rpc::HeartbeatRequest> {
+template<> struct RpcMessageTraits<solarxr_protocol::application::rpc::HeartbeatRequest> {
   static const RpcMessage enum_value = RpcMessage::HeartbeatRequest;
 };
 
-template<> struct RpcMessageTraits<solarxr_protocol::rpc::HeartbeatResponse> {
+template<> struct RpcMessageTraits<solarxr_protocol::application::rpc::HeartbeatResponse> {
   static const RpcMessage enum_value = RpcMessage::HeartbeatResponse;
 };
 
-template<> struct RpcMessageTraits<solarxr_protocol::rpc::ResetRequest> {
+template<> struct RpcMessageTraits<solarxr_protocol::application::rpc::ResetRequest> {
   static const RpcMessage enum_value = RpcMessage::ResetRequest;
 };
 
-template<> struct RpcMessageTraits<solarxr_protocol::rpc::AssignTrackerRequest> {
+template<> struct RpcMessageTraits<solarxr_protocol::application::rpc::AssignTrackerRequest> {
   static const RpcMessage enum_value = RpcMessage::AssignTrackerRequest;
 };
 
-template<> struct RpcMessageTraits<solarxr_protocol::rpc::SettingsRequest> {
+template<> struct RpcMessageTraits<solarxr_protocol::application::rpc::SettingsRequest> {
   static const RpcMessage enum_value = RpcMessage::SettingsRequest;
 };
 
-template<> struct RpcMessageTraits<solarxr_protocol::rpc::SettingsResponse> {
+template<> struct RpcMessageTraits<solarxr_protocol::application::rpc::SettingsResponse> {
   static const RpcMessage enum_value = RpcMessage::SettingsResponse;
 };
 
-template<> struct RpcMessageTraits<solarxr_protocol::rpc::ChangeSettingsRequest> {
+template<> struct RpcMessageTraits<solarxr_protocol::application::rpc::ChangeSettingsRequest> {
   static const RpcMessage enum_value = RpcMessage::ChangeSettingsRequest;
 };
 
-template<> struct RpcMessageTraits<solarxr_protocol::rpc::RecordBVHRequest> {
+template<> struct RpcMessageTraits<solarxr_protocol::application::rpc::RecordBVHRequest> {
   static const RpcMessage enum_value = RpcMessage::RecordBVHRequest;
 };
 
-template<> struct RpcMessageTraits<solarxr_protocol::rpc::RecordBVHStatus> {
+template<> struct RpcMessageTraits<solarxr_protocol::application::rpc::RecordBVHStatus> {
   static const RpcMessage enum_value = RpcMessage::RecordBVHStatus;
 };
 
-template<> struct RpcMessageTraits<solarxr_protocol::rpc::SkeletonConfigRequest> {
+template<> struct RpcMessageTraits<solarxr_protocol::application::rpc::SkeletonConfigRequest> {
   static const RpcMessage enum_value = RpcMessage::SkeletonConfigRequest;
 };
 
-template<> struct RpcMessageTraits<solarxr_protocol::rpc::ChangeSkeletonConfigRequest> {
+template<> struct RpcMessageTraits<solarxr_protocol::application::rpc::ChangeSkeletonConfigRequest> {
   static const RpcMessage enum_value = RpcMessage::ChangeSkeletonConfigRequest;
 };
 
-template<> struct RpcMessageTraits<solarxr_protocol::rpc::SkeletonResetAllRequest> {
+template<> struct RpcMessageTraits<solarxr_protocol::application::rpc::SkeletonResetAllRequest> {
   static const RpcMessage enum_value = RpcMessage::SkeletonResetAllRequest;
 };
 
-template<> struct RpcMessageTraits<solarxr_protocol::rpc::SkeletonConfigResponse> {
+template<> struct RpcMessageTraits<solarxr_protocol::application::rpc::SkeletonConfigResponse> {
   static const RpcMessage enum_value = RpcMessage::SkeletonConfigResponse;
 };
 
-template<> struct RpcMessageTraits<solarxr_protocol::rpc::OpenSerialRequest> {
+template<> struct RpcMessageTraits<solarxr_protocol::application::rpc::OpenSerialRequest> {
   static const RpcMessage enum_value = RpcMessage::OpenSerialRequest;
 };
 
-template<> struct RpcMessageTraits<solarxr_protocol::rpc::CloseSerialRequest> {
+template<> struct RpcMessageTraits<solarxr_protocol::application::rpc::CloseSerialRequest> {
   static const RpcMessage enum_value = RpcMessage::CloseSerialRequest;
 };
 
-template<> struct RpcMessageTraits<solarxr_protocol::rpc::SetWifiRequest> {
+template<> struct RpcMessageTraits<solarxr_protocol::application::rpc::SetWifiRequest> {
   static const RpcMessage enum_value = RpcMessage::SetWifiRequest;
 };
 
-template<> struct RpcMessageTraits<solarxr_protocol::rpc::SerialUpdateResponse> {
+template<> struct RpcMessageTraits<solarxr_protocol::application::rpc::SerialUpdateResponse> {
   static const RpcMessage enum_value = RpcMessage::SerialUpdateResponse;
 };
 
-template<> struct RpcMessageTraits<solarxr_protocol::rpc::AutoBoneProcessRequest> {
+template<> struct RpcMessageTraits<solarxr_protocol::application::rpc::AutoBoneProcessRequest> {
   static const RpcMessage enum_value = RpcMessage::AutoBoneProcessRequest;
 };
 
-template<> struct RpcMessageTraits<solarxr_protocol::rpc::AutoBoneProcessStatusResponse> {
+template<> struct RpcMessageTraits<solarxr_protocol::application::rpc::AutoBoneProcessStatusResponse> {
   static const RpcMessage enum_value = RpcMessage::AutoBoneProcessStatusResponse;
 };
 
-template<> struct RpcMessageTraits<solarxr_protocol::rpc::AutoBoneEpochResponse> {
+template<> struct RpcMessageTraits<solarxr_protocol::application::rpc::AutoBoneEpochResponse> {
   static const RpcMessage enum_value = RpcMessage::AutoBoneEpochResponse;
 };
 
-template<> struct RpcMessageTraits<solarxr_protocol::rpc::OverlayDisplayModeRequest> {
+template<> struct RpcMessageTraits<solarxr_protocol::application::rpc::OverlayDisplayModeRequest> {
   static const RpcMessage enum_value = RpcMessage::OverlayDisplayModeRequest;
 };
 
-template<> struct RpcMessageTraits<solarxr_protocol::rpc::OverlayDisplayModeChangeRequest> {
+template<> struct RpcMessageTraits<solarxr_protocol::application::rpc::OverlayDisplayModeChangeRequest> {
   static const RpcMessage enum_value = RpcMessage::OverlayDisplayModeChangeRequest;
 };
 
-template<> struct RpcMessageTraits<solarxr_protocol::rpc::OverlayDisplayModeResponse> {
+template<> struct RpcMessageTraits<solarxr_protocol::application::rpc::OverlayDisplayModeResponse> {
   static const RpcMessage enum_value = RpcMessage::OverlayDisplayModeResponse;
 };
 
-template<> struct RpcMessageTraits<solarxr_protocol::rpc::SerialTrackerRebootRequest> {
+template<> struct RpcMessageTraits<solarxr_protocol::application::rpc::SerialTrackerRebootRequest> {
   static const RpcMessage enum_value = RpcMessage::SerialTrackerRebootRequest;
 };
 
-template<> struct RpcMessageTraits<solarxr_protocol::rpc::SerialTrackerGetInfoRequest> {
+template<> struct RpcMessageTraits<solarxr_protocol::application::rpc::SerialTrackerGetInfoRequest> {
   static const RpcMessage enum_value = RpcMessage::SerialTrackerGetInfoRequest;
 };
 
-template<> struct RpcMessageTraits<solarxr_protocol::rpc::SerialTrackerFactoryResetRequest> {
+template<> struct RpcMessageTraits<solarxr_protocol::application::rpc::SerialTrackerFactoryResetRequest> {
   static const RpcMessage enum_value = RpcMessage::SerialTrackerFactoryResetRequest;
+};
+
+template<> struct RpcMessageTraits<solarxr_protocol::application::rpc::DetectedDevicesRequest> {
+  static const RpcMessage enum_value = RpcMessage::DetectedDevicesRequest;
+};
+
+template<> struct RpcMessageTraits<solarxr_protocol::application::rpc::PairDeviceRequest> {
+  static const RpcMessage enum_value = RpcMessage::PairDeviceRequest;
 };
 
 bool VerifyRpcMessage(flatbuffers::Verifier &verifier, const void *obj, RpcMessage type);
@@ -1118,11 +1403,11 @@ template<typename T> struct TopicTraits {
   static const Topic enum_value = Topic::NONE;
 };
 
-template<> struct TopicTraits<solarxr_protocol::pub_sub::TopicHandle> {
+template<> struct TopicTraits<solarxr_protocol::application::pub_sub::TopicHandle> {
   static const Topic enum_value = Topic::TopicHandle;
 };
 
-template<> struct TopicTraits<solarxr_protocol::pub_sub::TopicId> {
+template<> struct TopicTraits<solarxr_protocol::application::pub_sub::TopicId> {
   static const Topic enum_value = Topic::TopicId;
 };
 
@@ -1172,19 +1457,19 @@ template<typename T> struct PubSubUnionTraits {
   static const PubSubUnion enum_value = PubSubUnion::NONE;
 };
 
-template<> struct PubSubUnionTraits<solarxr_protocol::pub_sub::Message> {
+template<> struct PubSubUnionTraits<solarxr_protocol::application::pub_sub::Message> {
   static const PubSubUnion enum_value = PubSubUnion::Message;
 };
 
-template<> struct PubSubUnionTraits<solarxr_protocol::pub_sub::SubscriptionRequest> {
+template<> struct PubSubUnionTraits<solarxr_protocol::application::pub_sub::SubscriptionRequest> {
   static const PubSubUnion enum_value = PubSubUnion::SubscriptionRequest;
 };
 
-template<> struct PubSubUnionTraits<solarxr_protocol::pub_sub::TopicHandleRequest> {
+template<> struct PubSubUnionTraits<solarxr_protocol::application::pub_sub::TopicHandleRequest> {
   static const PubSubUnion enum_value = PubSubUnion::TopicHandleRequest;
 };
 
-template<> struct PubSubUnionTraits<solarxr_protocol::pub_sub::TopicMapping> {
+template<> struct PubSubUnionTraits<solarxr_protocol::application::pub_sub::TopicMapping> {
   static const PubSubUnion enum_value = PubSubUnion::TopicMapping;
 };
 
@@ -1239,7 +1524,7 @@ template<> struct PayloadTraits<solarxr_protocol::datatypes::Bytes> {
   static const Payload enum_value = Payload::solarxr_protocol_datatypes_Bytes;
 };
 
-template<> struct PayloadTraits<solarxr_protocol::pub_sub::KeyValues> {
+template<> struct PayloadTraits<solarxr_protocol::application::pub_sub::KeyValues> {
   static const Payload enum_value = Payload::KeyValues;
 };
 
@@ -1247,6 +1532,7 @@ bool VerifyPayload(flatbuffers::Verifier &verifier, const void *obj, Payload typ
 bool VerifyPayloadVector(flatbuffers::Verifier &verifier, const flatbuffers::Vector<flatbuffers::Offset<void>> *values, const flatbuffers::Vector<Payload> *types);
 
 }  // namespace pub_sub
+}  // namespace application
 
 namespace datatypes {
 
@@ -2027,6 +2313,888 @@ inline flatbuffers::Offset<FirmwareStatusMask> CreateFirmwareStatusMask(
 }  // namespace hardware_info
 }  // namespace datatypes
 
+namespace device {
+namespace pairing {
+
+/// Broadcast by the server to discover devices on startup.
+/// The devices will respond with the `PairingInfo` packet.
+struct DiscoverRequest FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
+  typedef DiscoverRequestBuilder Builder;
+  bool Verify(flatbuffers::Verifier &verifier) const {
+    return VerifyTableStart(verifier) &&
+           verifier.EndTable();
+  }
+};
+
+struct DiscoverRequestBuilder {
+  typedef DiscoverRequest Table;
+  flatbuffers::FlatBufferBuilder &fbb_;
+  flatbuffers::uoffset_t start_;
+  explicit DiscoverRequestBuilder(flatbuffers::FlatBufferBuilder &_fbb)
+        : fbb_(_fbb) {
+    start_ = fbb_.StartTable();
+  }
+  flatbuffers::Offset<DiscoverRequest> Finish() {
+    const auto end = fbb_.EndTable(start_);
+    auto o = flatbuffers::Offset<DiscoverRequest>(end);
+    return o;
+  }
+};
+
+inline flatbuffers::Offset<DiscoverRequest> CreateDiscoverRequest(
+    flatbuffers::FlatBufferBuilder &_fbb) {
+  DiscoverRequestBuilder builder_(_fbb);
+  return builder_.Finish();
+}
+
+/// Broadcast by the device on startup to tell servers what this device supports,
+/// and if it's already paired (i.e. if the server should show the popup).
+struct PairingInfo FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
+  typedef PairingInfoBuilder Builder;
+  enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
+    VT_PAIRED_TO = 4,
+    VT_DISPLAY_NAME = 6,
+    VT_MODEL = 8,
+    VT_MANUFACTURER = 10,
+    VT_FIRMWARE_VERSION = 12,
+    VT_MCU_TYPE = 14,
+    VT_FEATURES = 16,
+    VT_SENSORS = 18
+  };
+  /// If this tracker isn't paired to any server, this field should be `0`.
+  uint32_t paired_to() const {
+    return GetField<uint32_t>(VT_PAIRED_TO, 0);
+  }
+  const flatbuffers::String *display_name() const {
+    return GetPointer<const flatbuffers::String *>(VT_DISPLAY_NAME);
+  }
+  const flatbuffers::String *model() const {
+    return GetPointer<const flatbuffers::String *>(VT_MODEL);
+  }
+  const flatbuffers::String *manufacturer() const {
+    return GetPointer<const flatbuffers::String *>(VT_MANUFACTURER);
+  }
+  const flatbuffers::String *firmware_version() const {
+    return GetPointer<const flatbuffers::String *>(VT_FIRMWARE_VERSION);
+  }
+  solarxr_protocol::datatypes::hardware_info::McuType mcu_type() const {
+    return static_cast<solarxr_protocol::datatypes::hardware_info::McuType>(GetField<uint16_t>(VT_MCU_TYPE, 0));
+  }
+  const solarxr_protocol::device::pairing::DeviceFeatureInfo *features() const {
+    return GetPointer<const solarxr_protocol::device::pairing::DeviceFeatureInfo *>(VT_FEATURES);
+  }
+  const flatbuffers::Vector<flatbuffers::Offset<solarxr_protocol::device::pairing::DeviceSensorInfo>> *sensors() const {
+    return GetPointer<const flatbuffers::Vector<flatbuffers::Offset<solarxr_protocol::device::pairing::DeviceSensorInfo>> *>(VT_SENSORS);
+  }
+  bool Verify(flatbuffers::Verifier &verifier) const {
+    return VerifyTableStart(verifier) &&
+           VerifyField<uint32_t>(verifier, VT_PAIRED_TO, 4) &&
+           VerifyOffsetRequired(verifier, VT_DISPLAY_NAME) &&
+           verifier.VerifyString(display_name()) &&
+           VerifyOffsetRequired(verifier, VT_MODEL) &&
+           verifier.VerifyString(model()) &&
+           VerifyOffsetRequired(verifier, VT_MANUFACTURER) &&
+           verifier.VerifyString(manufacturer()) &&
+           VerifyOffsetRequired(verifier, VT_FIRMWARE_VERSION) &&
+           verifier.VerifyString(firmware_version()) &&
+           VerifyField<uint16_t>(verifier, VT_MCU_TYPE, 2) &&
+           VerifyOffsetRequired(verifier, VT_FEATURES) &&
+           verifier.VerifyTable(features()) &&
+           VerifyOffsetRequired(verifier, VT_SENSORS) &&
+           verifier.VerifyVector(sensors()) &&
+           verifier.VerifyVectorOfTables(sensors()) &&
+           verifier.EndTable();
+  }
+};
+
+struct PairingInfoBuilder {
+  typedef PairingInfo Table;
+  flatbuffers::FlatBufferBuilder &fbb_;
+  flatbuffers::uoffset_t start_;
+  void add_paired_to(uint32_t paired_to) {
+    fbb_.AddElement<uint32_t>(PairingInfo::VT_PAIRED_TO, paired_to, 0);
+  }
+  void add_display_name(flatbuffers::Offset<flatbuffers::String> display_name) {
+    fbb_.AddOffset(PairingInfo::VT_DISPLAY_NAME, display_name);
+  }
+  void add_model(flatbuffers::Offset<flatbuffers::String> model) {
+    fbb_.AddOffset(PairingInfo::VT_MODEL, model);
+  }
+  void add_manufacturer(flatbuffers::Offset<flatbuffers::String> manufacturer) {
+    fbb_.AddOffset(PairingInfo::VT_MANUFACTURER, manufacturer);
+  }
+  void add_firmware_version(flatbuffers::Offset<flatbuffers::String> firmware_version) {
+    fbb_.AddOffset(PairingInfo::VT_FIRMWARE_VERSION, firmware_version);
+  }
+  void add_mcu_type(solarxr_protocol::datatypes::hardware_info::McuType mcu_type) {
+    fbb_.AddElement<uint16_t>(PairingInfo::VT_MCU_TYPE, static_cast<uint16_t>(mcu_type), 0);
+  }
+  void add_features(flatbuffers::Offset<solarxr_protocol::device::pairing::DeviceFeatureInfo> features) {
+    fbb_.AddOffset(PairingInfo::VT_FEATURES, features);
+  }
+  void add_sensors(flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<solarxr_protocol::device::pairing::DeviceSensorInfo>>> sensors) {
+    fbb_.AddOffset(PairingInfo::VT_SENSORS, sensors);
+  }
+  explicit PairingInfoBuilder(flatbuffers::FlatBufferBuilder &_fbb)
+        : fbb_(_fbb) {
+    start_ = fbb_.StartTable();
+  }
+  flatbuffers::Offset<PairingInfo> Finish() {
+    const auto end = fbb_.EndTable(start_);
+    auto o = flatbuffers::Offset<PairingInfo>(end);
+    fbb_.Required(o, PairingInfo::VT_DISPLAY_NAME);
+    fbb_.Required(o, PairingInfo::VT_MODEL);
+    fbb_.Required(o, PairingInfo::VT_MANUFACTURER);
+    fbb_.Required(o, PairingInfo::VT_FIRMWARE_VERSION);
+    fbb_.Required(o, PairingInfo::VT_FEATURES);
+    fbb_.Required(o, PairingInfo::VT_SENSORS);
+    return o;
+  }
+};
+
+inline flatbuffers::Offset<PairingInfo> CreatePairingInfo(
+    flatbuffers::FlatBufferBuilder &_fbb,
+    uint32_t paired_to = 0,
+    flatbuffers::Offset<flatbuffers::String> display_name = 0,
+    flatbuffers::Offset<flatbuffers::String> model = 0,
+    flatbuffers::Offset<flatbuffers::String> manufacturer = 0,
+    flatbuffers::Offset<flatbuffers::String> firmware_version = 0,
+    solarxr_protocol::datatypes::hardware_info::McuType mcu_type = solarxr_protocol::datatypes::hardware_info::McuType::Other,
+    flatbuffers::Offset<solarxr_protocol::device::pairing::DeviceFeatureInfo> features = 0,
+    flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<solarxr_protocol::device::pairing::DeviceSensorInfo>>> sensors = 0) {
+  PairingInfoBuilder builder_(_fbb);
+  builder_.add_sensors(sensors);
+  builder_.add_features(features);
+  builder_.add_firmware_version(firmware_version);
+  builder_.add_manufacturer(manufacturer);
+  builder_.add_model(model);
+  builder_.add_display_name(display_name);
+  builder_.add_paired_to(paired_to);
+  builder_.add_mcu_type(mcu_type);
+  return builder_.Finish();
+}
+
+inline flatbuffers::Offset<PairingInfo> CreatePairingInfoDirect(
+    flatbuffers::FlatBufferBuilder &_fbb,
+    uint32_t paired_to = 0,
+    const char *display_name = nullptr,
+    const char *model = nullptr,
+    const char *manufacturer = nullptr,
+    const char *firmware_version = nullptr,
+    solarxr_protocol::datatypes::hardware_info::McuType mcu_type = solarxr_protocol::datatypes::hardware_info::McuType::Other,
+    flatbuffers::Offset<solarxr_protocol::device::pairing::DeviceFeatureInfo> features = 0,
+    const std::vector<flatbuffers::Offset<solarxr_protocol::device::pairing::DeviceSensorInfo>> *sensors = nullptr) {
+  auto display_name__ = display_name ? _fbb.CreateString(display_name) : 0;
+  auto model__ = model ? _fbb.CreateString(model) : 0;
+  auto manufacturer__ = manufacturer ? _fbb.CreateString(manufacturer) : 0;
+  auto firmware_version__ = firmware_version ? _fbb.CreateString(firmware_version) : 0;
+  auto sensors__ = sensors ? _fbb.CreateVector<flatbuffers::Offset<solarxr_protocol::device::pairing::DeviceSensorInfo>>(*sensors) : 0;
+  return solarxr_protocol::device::pairing::CreatePairingInfo(
+      _fbb,
+      paired_to,
+      display_name__,
+      model__,
+      manufacturer__,
+      firmware_version__,
+      mcu_type,
+      features,
+      sensors__);
+}
+
+struct DeviceFeatureInfo FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
+  typedef DeviceFeatureInfoBuilder Builder;
+  bool Verify(flatbuffers::Verifier &verifier) const {
+    return VerifyTableStart(verifier) &&
+           verifier.EndTable();
+  }
+};
+
+struct DeviceFeatureInfoBuilder {
+  typedef DeviceFeatureInfo Table;
+  flatbuffers::FlatBufferBuilder &fbb_;
+  flatbuffers::uoffset_t start_;
+  explicit DeviceFeatureInfoBuilder(flatbuffers::FlatBufferBuilder &_fbb)
+        : fbb_(_fbb) {
+    start_ = fbb_.StartTable();
+  }
+  flatbuffers::Offset<DeviceFeatureInfo> Finish() {
+    const auto end = fbb_.EndTable(start_);
+    auto o = flatbuffers::Offset<DeviceFeatureInfo>(end);
+    return o;
+  }
+};
+
+inline flatbuffers::Offset<DeviceFeatureInfo> CreateDeviceFeatureInfo(
+    flatbuffers::FlatBufferBuilder &_fbb) {
+  DeviceFeatureInfoBuilder builder_(_fbb);
+  return builder_.Finish();
+}
+
+struct DeviceSensorInfo FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
+  typedef DeviceSensorInfoBuilder Builder;
+  enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
+    VT_ID = 4,
+    VT_TYPE = 6,
+    VT_FEATURES = 8
+  };
+  /// If the ID is contained twice in the array,
+  /// only the first one will be used and the others will be ignöred.
+  uint8_t id() const {
+    return GetField<uint8_t>(VT_ID, 0);
+  }
+  solarxr_protocol::datatypes::hardware_info::ImuType type() const {
+    return static_cast<solarxr_protocol::datatypes::hardware_info::ImuType>(GetField<uint16_t>(VT_TYPE, 0));
+  }
+  const solarxr_protocol::device::pairing::ImuFeatureInfo *features() const {
+    return GetPointer<const solarxr_protocol::device::pairing::ImuFeatureInfo *>(VT_FEATURES);
+  }
+  bool Verify(flatbuffers::Verifier &verifier) const {
+    return VerifyTableStart(verifier) &&
+           VerifyField<uint8_t>(verifier, VT_ID, 1) &&
+           VerifyField<uint16_t>(verifier, VT_TYPE, 2) &&
+           VerifyOffsetRequired(verifier, VT_FEATURES) &&
+           verifier.VerifyTable(features()) &&
+           verifier.EndTable();
+  }
+};
+
+struct DeviceSensorInfoBuilder {
+  typedef DeviceSensorInfo Table;
+  flatbuffers::FlatBufferBuilder &fbb_;
+  flatbuffers::uoffset_t start_;
+  void add_id(uint8_t id) {
+    fbb_.AddElement<uint8_t>(DeviceSensorInfo::VT_ID, id, 0);
+  }
+  void add_type(solarxr_protocol::datatypes::hardware_info::ImuType type) {
+    fbb_.AddElement<uint16_t>(DeviceSensorInfo::VT_TYPE, static_cast<uint16_t>(type), 0);
+  }
+  void add_features(flatbuffers::Offset<solarxr_protocol::device::pairing::ImuFeatureInfo> features) {
+    fbb_.AddOffset(DeviceSensorInfo::VT_FEATURES, features);
+  }
+  explicit DeviceSensorInfoBuilder(flatbuffers::FlatBufferBuilder &_fbb)
+        : fbb_(_fbb) {
+    start_ = fbb_.StartTable();
+  }
+  flatbuffers::Offset<DeviceSensorInfo> Finish() {
+    const auto end = fbb_.EndTable(start_);
+    auto o = flatbuffers::Offset<DeviceSensorInfo>(end);
+    fbb_.Required(o, DeviceSensorInfo::VT_FEATURES);
+    return o;
+  }
+};
+
+inline flatbuffers::Offset<DeviceSensorInfo> CreateDeviceSensorInfo(
+    flatbuffers::FlatBufferBuilder &_fbb,
+    uint8_t id = 0,
+    solarxr_protocol::datatypes::hardware_info::ImuType type = solarxr_protocol::datatypes::hardware_info::ImuType::Other,
+    flatbuffers::Offset<solarxr_protocol::device::pairing::ImuFeatureInfo> features = 0) {
+  DeviceSensorInfoBuilder builder_(_fbb);
+  builder_.add_features(features);
+  builder_.add_type(type);
+  builder_.add_id(id);
+  return builder_.Finish();
+}
+
+struct ImuFeatureInfo FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
+  typedef ImuFeatureInfoBuilder Builder;
+  enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
+    VT_GYROSCOPE_CALIBRATION = 4,
+    VT_ACCELEROMETER_CALIBRATION = 6,
+    VT_MAGNETOMETER_CALIBRATION = 8
+  };
+  bool gyroscope_calibration() const {
+    return GetField<uint8_t>(VT_GYROSCOPE_CALIBRATION, 0) != 0;
+  }
+  bool accelerometer_calibration() const {
+    return GetField<uint8_t>(VT_ACCELEROMETER_CALIBRATION, 0) != 0;
+  }
+  bool magnetometer_calibration() const {
+    return GetField<uint8_t>(VT_MAGNETOMETER_CALIBRATION, 0) != 0;
+  }
+  bool Verify(flatbuffers::Verifier &verifier) const {
+    return VerifyTableStart(verifier) &&
+           VerifyField<uint8_t>(verifier, VT_GYROSCOPE_CALIBRATION, 1) &&
+           VerifyField<uint8_t>(verifier, VT_ACCELEROMETER_CALIBRATION, 1) &&
+           VerifyField<uint8_t>(verifier, VT_MAGNETOMETER_CALIBRATION, 1) &&
+           verifier.EndTable();
+  }
+};
+
+struct ImuFeatureInfoBuilder {
+  typedef ImuFeatureInfo Table;
+  flatbuffers::FlatBufferBuilder &fbb_;
+  flatbuffers::uoffset_t start_;
+  void add_gyroscope_calibration(bool gyroscope_calibration) {
+    fbb_.AddElement<uint8_t>(ImuFeatureInfo::VT_GYROSCOPE_CALIBRATION, static_cast<uint8_t>(gyroscope_calibration), 0);
+  }
+  void add_accelerometer_calibration(bool accelerometer_calibration) {
+    fbb_.AddElement<uint8_t>(ImuFeatureInfo::VT_ACCELEROMETER_CALIBRATION, static_cast<uint8_t>(accelerometer_calibration), 0);
+  }
+  void add_magnetometer_calibration(bool magnetometer_calibration) {
+    fbb_.AddElement<uint8_t>(ImuFeatureInfo::VT_MAGNETOMETER_CALIBRATION, static_cast<uint8_t>(magnetometer_calibration), 0);
+  }
+  explicit ImuFeatureInfoBuilder(flatbuffers::FlatBufferBuilder &_fbb)
+        : fbb_(_fbb) {
+    start_ = fbb_.StartTable();
+  }
+  flatbuffers::Offset<ImuFeatureInfo> Finish() {
+    const auto end = fbb_.EndTable(start_);
+    auto o = flatbuffers::Offset<ImuFeatureInfo>(end);
+    return o;
+  }
+};
+
+inline flatbuffers::Offset<ImuFeatureInfo> CreateImuFeatureInfo(
+    flatbuffers::FlatBufferBuilder &_fbb,
+    bool gyroscope_calibration = false,
+    bool accelerometer_calibration = false,
+    bool magnetometer_calibration = false) {
+  ImuFeatureInfoBuilder builder_(_fbb);
+  builder_.add_magnetometer_calibration(magnetometer_calibration);
+  builder_.add_accelerometer_calibration(accelerometer_calibration);
+  builder_.add_gyroscope_calibration(gyroscope_calibration);
+  return builder_.Finish();
+}
+
+/// Sent by a server, trying to connect to a device
+/// which then the device will respond to with the `PairingResponse` packet.
+struct PairingRequest FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
+  typedef PairingRequestBuilder Builder;
+  enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
+    VT_SERVER_ID = 4
+  };
+  /// Should not be `0`, will get ignored by the tracker otherwise.
+  uint32_t server_id() const {
+    return GetField<uint32_t>(VT_SERVER_ID, 0);
+  }
+  bool Verify(flatbuffers::Verifier &verifier) const {
+    return VerifyTableStart(verifier) &&
+           VerifyField<uint32_t>(verifier, VT_SERVER_ID, 4) &&
+           verifier.EndTable();
+  }
+};
+
+struct PairingRequestBuilder {
+  typedef PairingRequest Table;
+  flatbuffers::FlatBufferBuilder &fbb_;
+  flatbuffers::uoffset_t start_;
+  void add_server_id(uint32_t server_id) {
+    fbb_.AddElement<uint32_t>(PairingRequest::VT_SERVER_ID, server_id, 0);
+  }
+  explicit PairingRequestBuilder(flatbuffers::FlatBufferBuilder &_fbb)
+        : fbb_(_fbb) {
+    start_ = fbb_.StartTable();
+  }
+  flatbuffers::Offset<PairingRequest> Finish() {
+    const auto end = fbb_.EndTable(start_);
+    auto o = flatbuffers::Offset<PairingRequest>(end);
+    return o;
+  }
+};
+
+inline flatbuffers::Offset<PairingRequest> CreatePairingRequest(
+    flatbuffers::FlatBufferBuilder &_fbb,
+    uint32_t server_id = 0) {
+  PairingRequestBuilder builder_(_fbb);
+  builder_.add_server_id(server_id);
+  return builder_.Finish();
+}
+
+struct PairingResponse FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
+  typedef PairingResponseBuilder Builder;
+  enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
+    VT_ERROR = 4
+  };
+  solarxr_protocol::device::pairing::PairingResponseError error() const {
+    return static_cast<solarxr_protocol::device::pairing::PairingResponseError>(GetField<uint8_t>(VT_ERROR, 0));
+  }
+  bool Verify(flatbuffers::Verifier &verifier) const {
+    return VerifyTableStart(verifier) &&
+           VerifyField<uint8_t>(verifier, VT_ERROR, 1) &&
+           verifier.EndTable();
+  }
+};
+
+struct PairingResponseBuilder {
+  typedef PairingResponse Table;
+  flatbuffers::FlatBufferBuilder &fbb_;
+  flatbuffers::uoffset_t start_;
+  void add_error(solarxr_protocol::device::pairing::PairingResponseError error) {
+    fbb_.AddElement<uint8_t>(PairingResponse::VT_ERROR, static_cast<uint8_t>(error), 0);
+  }
+  explicit PairingResponseBuilder(flatbuffers::FlatBufferBuilder &_fbb)
+        : fbb_(_fbb) {
+    start_ = fbb_.StartTable();
+  }
+  flatbuffers::Offset<PairingResponse> Finish() {
+    const auto end = fbb_.EndTable(start_);
+    auto o = flatbuffers::Offset<PairingResponse>(end);
+    return o;
+  }
+};
+
+inline flatbuffers::Offset<PairingResponse> CreatePairingResponse(
+    flatbuffers::FlatBufferBuilder &_fbb,
+    solarxr_protocol::device::pairing::PairingResponseError error = solarxr_protocol::device::pairing::PairingResponseError::NONE) {
+  PairingResponseBuilder builder_(_fbb);
+  builder_.add_error(error);
+  return builder_.Finish();
+}
+
+}  // namespace pairing
+
+namespace packets {
+
+struct DeviceStatus FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
+  typedef DeviceStatusBuilder Builder;
+  enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
+    VT_BATTERY_PERCENTAGE = 4,
+    VT_RSSI = 6
+  };
+  uint8_t battery_percentage() const {
+    return GetField<uint8_t>(VT_BATTERY_PERCENTAGE, 0);
+  }
+  int16_t rssi() const {
+    return GetField<int16_t>(VT_RSSI, 0);
+  }
+  bool Verify(flatbuffers::Verifier &verifier) const {
+    return VerifyTableStart(verifier) &&
+           VerifyField<uint8_t>(verifier, VT_BATTERY_PERCENTAGE, 1) &&
+           VerifyField<int16_t>(verifier, VT_RSSI, 2) &&
+           verifier.EndTable();
+  }
+};
+
+struct DeviceStatusBuilder {
+  typedef DeviceStatus Table;
+  flatbuffers::FlatBufferBuilder &fbb_;
+  flatbuffers::uoffset_t start_;
+  void add_battery_percentage(uint8_t battery_percentage) {
+    fbb_.AddElement<uint8_t>(DeviceStatus::VT_BATTERY_PERCENTAGE, battery_percentage, 0);
+  }
+  void add_rssi(int16_t rssi) {
+    fbb_.AddElement<int16_t>(DeviceStatus::VT_RSSI, rssi, 0);
+  }
+  explicit DeviceStatusBuilder(flatbuffers::FlatBufferBuilder &_fbb)
+        : fbb_(_fbb) {
+    start_ = fbb_.StartTable();
+  }
+  flatbuffers::Offset<DeviceStatus> Finish() {
+    const auto end = fbb_.EndTable(start_);
+    auto o = flatbuffers::Offset<DeviceStatus>(end);
+    return o;
+  }
+};
+
+inline flatbuffers::Offset<DeviceStatus> CreateDeviceStatus(
+    flatbuffers::FlatBufferBuilder &_fbb,
+    uint8_t battery_percentage = 0,
+    int16_t rssi = 0) {
+  DeviceStatusBuilder builder_(_fbb);
+  builder_.add_rssi(rssi);
+  builder_.add_battery_percentage(battery_percentage);
+  return builder_.Finish();
+}
+
+struct ImuStatus FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
+  typedef ImuStatusBuilder Builder;
+  enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
+    VT_ID = 4,
+    VT_IMU_TYPE = 6,
+    VT_POLL_RATE = 8,
+    VT_TEMPERATURE = 10,
+    VT_ERROR_STATUS = 12,
+    VT_MAGNETOMETER_ACCURACY = 14
+  };
+  uint8_t id() const {
+    return GetField<uint8_t>(VT_ID, 0);
+  }
+  solarxr_protocol::datatypes::hardware_info::ImuType imu_type() const {
+    return static_cast<solarxr_protocol::datatypes::hardware_info::ImuType>(GetField<uint16_t>(VT_IMU_TYPE, 0));
+  }
+  const solarxr_protocol::datatypes::HzF32 *poll_rate() const {
+    return GetStruct<const solarxr_protocol::datatypes::HzF32 *>(VT_POLL_RATE);
+  }
+  const solarxr_protocol::datatypes::Temperature *temperature() const {
+    return GetStruct<const solarxr_protocol::datatypes::Temperature *>(VT_TEMPERATURE);
+  }
+  flatbuffers::Optional<solarxr_protocol::datatypes::ImuErrorCode> error_status() const {
+    return GetOptional<uint8_t, solarxr_protocol::datatypes::ImuErrorCode>(VT_ERROR_STATUS);
+  }
+  float magnetometer_accuracy() const {
+    return GetField<float>(VT_MAGNETOMETER_ACCURACY, 0.0f);
+  }
+  bool Verify(flatbuffers::Verifier &verifier) const {
+    return VerifyTableStart(verifier) &&
+           VerifyField<uint8_t>(verifier, VT_ID, 1) &&
+           VerifyField<uint16_t>(verifier, VT_IMU_TYPE, 2) &&
+           VerifyField<solarxr_protocol::datatypes::HzF32>(verifier, VT_POLL_RATE, 4) &&
+           VerifyField<solarxr_protocol::datatypes::Temperature>(verifier, VT_TEMPERATURE, 4) &&
+           VerifyField<uint8_t>(verifier, VT_ERROR_STATUS, 1) &&
+           VerifyField<float>(verifier, VT_MAGNETOMETER_ACCURACY, 4) &&
+           verifier.EndTable();
+  }
+};
+
+struct ImuStatusBuilder {
+  typedef ImuStatus Table;
+  flatbuffers::FlatBufferBuilder &fbb_;
+  flatbuffers::uoffset_t start_;
+  void add_id(uint8_t id) {
+    fbb_.AddElement<uint8_t>(ImuStatus::VT_ID, id, 0);
+  }
+  void add_imu_type(solarxr_protocol::datatypes::hardware_info::ImuType imu_type) {
+    fbb_.AddElement<uint16_t>(ImuStatus::VT_IMU_TYPE, static_cast<uint16_t>(imu_type), 0);
+  }
+  void add_poll_rate(const solarxr_protocol::datatypes::HzF32 *poll_rate) {
+    fbb_.AddStruct(ImuStatus::VT_POLL_RATE, poll_rate);
+  }
+  void add_temperature(const solarxr_protocol::datatypes::Temperature *temperature) {
+    fbb_.AddStruct(ImuStatus::VT_TEMPERATURE, temperature);
+  }
+  void add_error_status(solarxr_protocol::datatypes::ImuErrorCode error_status) {
+    fbb_.AddElement<uint8_t>(ImuStatus::VT_ERROR_STATUS, static_cast<uint8_t>(error_status));
+  }
+  void add_magnetometer_accuracy(float magnetometer_accuracy) {
+    fbb_.AddElement<float>(ImuStatus::VT_MAGNETOMETER_ACCURACY, magnetometer_accuracy, 0.0f);
+  }
+  explicit ImuStatusBuilder(flatbuffers::FlatBufferBuilder &_fbb)
+        : fbb_(_fbb) {
+    start_ = fbb_.StartTable();
+  }
+  flatbuffers::Offset<ImuStatus> Finish() {
+    const auto end = fbb_.EndTable(start_);
+    auto o = flatbuffers::Offset<ImuStatus>(end);
+    return o;
+  }
+};
+
+inline flatbuffers::Offset<ImuStatus> CreateImuStatus(
+    flatbuffers::FlatBufferBuilder &_fbb,
+    uint8_t id = 0,
+    solarxr_protocol::datatypes::hardware_info::ImuType imu_type = solarxr_protocol::datatypes::hardware_info::ImuType::Other,
+    const solarxr_protocol::datatypes::HzF32 *poll_rate = nullptr,
+    const solarxr_protocol::datatypes::Temperature *temperature = nullptr,
+    flatbuffers::Optional<solarxr_protocol::datatypes::ImuErrorCode> error_status = flatbuffers::nullopt,
+    float magnetometer_accuracy = 0.0f) {
+  ImuStatusBuilder builder_(_fbb);
+  builder_.add_magnetometer_accuracy(magnetometer_accuracy);
+  builder_.add_temperature(temperature);
+  builder_.add_poll_rate(poll_rate);
+  builder_.add_imu_type(imu_type);
+  if(error_status) { builder_.add_error_status(*error_status); }
+  builder_.add_id(id);
+  return builder_.Finish();
+}
+
+struct ImuMovement FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
+  typedef ImuMovementBuilder Builder;
+  enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
+    VT_ID = 4,
+    VT_ROTATION = 6,
+    VT_ACCELERATION = 8
+  };
+  uint8_t id() const {
+    return GetField<uint8_t>(VT_ID, 0);
+  }
+  const solarxr_protocol::datatypes::math::Quat *rotation() const {
+    return GetStruct<const solarxr_protocol::datatypes::math::Quat *>(VT_ROTATION);
+  }
+  const solarxr_protocol::datatypes::math::Vec3f *acceleration() const {
+    return GetStruct<const solarxr_protocol::datatypes::math::Vec3f *>(VT_ACCELERATION);
+  }
+  bool Verify(flatbuffers::Verifier &verifier) const {
+    return VerifyTableStart(verifier) &&
+           VerifyField<uint8_t>(verifier, VT_ID, 1) &&
+           VerifyField<solarxr_protocol::datatypes::math::Quat>(verifier, VT_ROTATION, 4) &&
+           VerifyField<solarxr_protocol::datatypes::math::Vec3f>(verifier, VT_ACCELERATION, 4) &&
+           verifier.EndTable();
+  }
+};
+
+struct ImuMovementBuilder {
+  typedef ImuMovement Table;
+  flatbuffers::FlatBufferBuilder &fbb_;
+  flatbuffers::uoffset_t start_;
+  void add_id(uint8_t id) {
+    fbb_.AddElement<uint8_t>(ImuMovement::VT_ID, id, 0);
+  }
+  void add_rotation(const solarxr_protocol::datatypes::math::Quat *rotation) {
+    fbb_.AddStruct(ImuMovement::VT_ROTATION, rotation);
+  }
+  void add_acceleration(const solarxr_protocol::datatypes::math::Vec3f *acceleration) {
+    fbb_.AddStruct(ImuMovement::VT_ACCELERATION, acceleration);
+  }
+  explicit ImuMovementBuilder(flatbuffers::FlatBufferBuilder &_fbb)
+        : fbb_(_fbb) {
+    start_ = fbb_.StartTable();
+  }
+  flatbuffers::Offset<ImuMovement> Finish() {
+    const auto end = fbb_.EndTable(start_);
+    auto o = flatbuffers::Offset<ImuMovement>(end);
+    return o;
+  }
+};
+
+inline flatbuffers::Offset<ImuMovement> CreateImuMovement(
+    flatbuffers::FlatBufferBuilder &_fbb,
+    uint8_t id = 0,
+    const solarxr_protocol::datatypes::math::Quat *rotation = nullptr,
+    const solarxr_protocol::datatypes::math::Vec3f *acceleration = nullptr) {
+  ImuMovementBuilder builder_(_fbb);
+  builder_.add_acceleration(acceleration);
+  builder_.add_rotation(rotation);
+  builder_.add_id(id);
+  return builder_.Finish();
+}
+
+}  // namespace packets
+
+struct ServerBoundMessageHeader FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
+  typedef ServerBoundMessageHeaderBuilder Builder;
+  enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
+    VT_MAC_ADDRESS = 4,
+    VT_REQ_REP_TYPE = 6,
+    VT_REQ_REP = 8
+  };
+  const solarxr_protocol::datatypes::hardware_info::HardwareAddress *mac_address() const {
+    return GetStruct<const solarxr_protocol::datatypes::hardware_info::HardwareAddress *>(VT_MAC_ADDRESS);
+  }
+  solarxr_protocol::device::ServerBoundMessage req_rep_type() const {
+    return static_cast<solarxr_protocol::device::ServerBoundMessage>(GetField<uint8_t>(VT_REQ_REP_TYPE, 0));
+  }
+  const void *req_rep() const {
+    return GetPointer<const void *>(VT_REQ_REP);
+  }
+  template<typename T> const T *req_rep_as() const;
+  const solarxr_protocol::device::pairing::PairingInfo *req_rep_as_solarxr_protocol_device_pairing_PairingInfo() const {
+    return req_rep_type() == solarxr_protocol::device::ServerBoundMessage::solarxr_protocol_device_pairing_PairingInfo ? static_cast<const solarxr_protocol::device::pairing::PairingInfo *>(req_rep()) : nullptr;
+  }
+  const solarxr_protocol::device::pairing::PairingResponse *req_rep_as_solarxr_protocol_device_pairing_PairingResponse() const {
+    return req_rep_type() == solarxr_protocol::device::ServerBoundMessage::solarxr_protocol_device_pairing_PairingResponse ? static_cast<const solarxr_protocol::device::pairing::PairingResponse *>(req_rep()) : nullptr;
+  }
+  const solarxr_protocol::device::PingResponse *req_rep_as_PingResponse() const {
+    return req_rep_type() == solarxr_protocol::device::ServerBoundMessage::PingResponse ? static_cast<const solarxr_protocol::device::PingResponse *>(req_rep()) : nullptr;
+  }
+  const solarxr_protocol::device::packets::DeviceStatus *req_rep_as_solarxr_protocol_device_packets_DeviceStatus() const {
+    return req_rep_type() == solarxr_protocol::device::ServerBoundMessage::solarxr_protocol_device_packets_DeviceStatus ? static_cast<const solarxr_protocol::device::packets::DeviceStatus *>(req_rep()) : nullptr;
+  }
+  const solarxr_protocol::device::packets::ImuStatus *req_rep_as_solarxr_protocol_device_packets_ImuStatus() const {
+    return req_rep_type() == solarxr_protocol::device::ServerBoundMessage::solarxr_protocol_device_packets_ImuStatus ? static_cast<const solarxr_protocol::device::packets::ImuStatus *>(req_rep()) : nullptr;
+  }
+  const solarxr_protocol::device::packets::ImuMovement *req_rep_as_solarxr_protocol_device_packets_ImuMovement() const {
+    return req_rep_type() == solarxr_protocol::device::ServerBoundMessage::solarxr_protocol_device_packets_ImuMovement ? static_cast<const solarxr_protocol::device::packets::ImuMovement *>(req_rep()) : nullptr;
+  }
+  bool Verify(flatbuffers::Verifier &verifier) const {
+    return VerifyTableStart(verifier) &&
+           VerifyFieldRequired<solarxr_protocol::datatypes::hardware_info::HardwareAddress>(verifier, VT_MAC_ADDRESS, 8) &&
+           VerifyField<uint8_t>(verifier, VT_REQ_REP_TYPE, 1) &&
+           VerifyOffset(verifier, VT_REQ_REP) &&
+           VerifyServerBoundMessage(verifier, req_rep(), req_rep_type()) &&
+           verifier.EndTable();
+  }
+};
+
+template<> inline const solarxr_protocol::device::pairing::PairingInfo *ServerBoundMessageHeader::req_rep_as<solarxr_protocol::device::pairing::PairingInfo>() const {
+  return req_rep_as_solarxr_protocol_device_pairing_PairingInfo();
+}
+
+template<> inline const solarxr_protocol::device::pairing::PairingResponse *ServerBoundMessageHeader::req_rep_as<solarxr_protocol::device::pairing::PairingResponse>() const {
+  return req_rep_as_solarxr_protocol_device_pairing_PairingResponse();
+}
+
+template<> inline const solarxr_protocol::device::PingResponse *ServerBoundMessageHeader::req_rep_as<solarxr_protocol::device::PingResponse>() const {
+  return req_rep_as_PingResponse();
+}
+
+template<> inline const solarxr_protocol::device::packets::DeviceStatus *ServerBoundMessageHeader::req_rep_as<solarxr_protocol::device::packets::DeviceStatus>() const {
+  return req_rep_as_solarxr_protocol_device_packets_DeviceStatus();
+}
+
+template<> inline const solarxr_protocol::device::packets::ImuStatus *ServerBoundMessageHeader::req_rep_as<solarxr_protocol::device::packets::ImuStatus>() const {
+  return req_rep_as_solarxr_protocol_device_packets_ImuStatus();
+}
+
+template<> inline const solarxr_protocol::device::packets::ImuMovement *ServerBoundMessageHeader::req_rep_as<solarxr_protocol::device::packets::ImuMovement>() const {
+  return req_rep_as_solarxr_protocol_device_packets_ImuMovement();
+}
+
+struct ServerBoundMessageHeaderBuilder {
+  typedef ServerBoundMessageHeader Table;
+  flatbuffers::FlatBufferBuilder &fbb_;
+  flatbuffers::uoffset_t start_;
+  void add_mac_address(const solarxr_protocol::datatypes::hardware_info::HardwareAddress *mac_address) {
+    fbb_.AddStruct(ServerBoundMessageHeader::VT_MAC_ADDRESS, mac_address);
+  }
+  void add_req_rep_type(solarxr_protocol::device::ServerBoundMessage req_rep_type) {
+    fbb_.AddElement<uint8_t>(ServerBoundMessageHeader::VT_REQ_REP_TYPE, static_cast<uint8_t>(req_rep_type), 0);
+  }
+  void add_req_rep(flatbuffers::Offset<void> req_rep) {
+    fbb_.AddOffset(ServerBoundMessageHeader::VT_REQ_REP, req_rep);
+  }
+  explicit ServerBoundMessageHeaderBuilder(flatbuffers::FlatBufferBuilder &_fbb)
+        : fbb_(_fbb) {
+    start_ = fbb_.StartTable();
+  }
+  flatbuffers::Offset<ServerBoundMessageHeader> Finish() {
+    const auto end = fbb_.EndTable(start_);
+    auto o = flatbuffers::Offset<ServerBoundMessageHeader>(end);
+    fbb_.Required(o, ServerBoundMessageHeader::VT_MAC_ADDRESS);
+    return o;
+  }
+};
+
+inline flatbuffers::Offset<ServerBoundMessageHeader> CreateServerBoundMessageHeader(
+    flatbuffers::FlatBufferBuilder &_fbb,
+    const solarxr_protocol::datatypes::hardware_info::HardwareAddress *mac_address = nullptr,
+    solarxr_protocol::device::ServerBoundMessage req_rep_type = solarxr_protocol::device::ServerBoundMessage::NONE,
+    flatbuffers::Offset<void> req_rep = 0) {
+  ServerBoundMessageHeaderBuilder builder_(_fbb);
+  builder_.add_req_rep(req_rep);
+  builder_.add_mac_address(mac_address);
+  builder_.add_req_rep_type(req_rep_type);
+  return builder_.Finish();
+}
+
+struct DeviceBoundMessageHeader FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
+  typedef DeviceBoundMessageHeaderBuilder Builder;
+  enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
+    VT_REQ_REP_TYPE = 4,
+    VT_REQ_REP = 6
+  };
+  solarxr_protocol::device::DeviceBoundMessage req_rep_type() const {
+    return static_cast<solarxr_protocol::device::DeviceBoundMessage>(GetField<uint8_t>(VT_REQ_REP_TYPE, 0));
+  }
+  const void *req_rep() const {
+    return GetPointer<const void *>(VT_REQ_REP);
+  }
+  template<typename T> const T *req_rep_as() const;
+  const solarxr_protocol::device::pairing::DiscoverRequest *req_rep_as_solarxr_protocol_device_pairing_DiscoverRequest() const {
+    return req_rep_type() == solarxr_protocol::device::DeviceBoundMessage::solarxr_protocol_device_pairing_DiscoverRequest ? static_cast<const solarxr_protocol::device::pairing::DiscoverRequest *>(req_rep()) : nullptr;
+  }
+  const solarxr_protocol::device::pairing::PairingRequest *req_rep_as_solarxr_protocol_device_pairing_PairingRequest() const {
+    return req_rep_type() == solarxr_protocol::device::DeviceBoundMessage::solarxr_protocol_device_pairing_PairingRequest ? static_cast<const solarxr_protocol::device::pairing::PairingRequest *>(req_rep()) : nullptr;
+  }
+  const solarxr_protocol::device::PingRequest *req_rep_as_PingRequest() const {
+    return req_rep_type() == solarxr_protocol::device::DeviceBoundMessage::PingRequest ? static_cast<const solarxr_protocol::device::PingRequest *>(req_rep()) : nullptr;
+  }
+  bool Verify(flatbuffers::Verifier &verifier) const {
+    return VerifyTableStart(verifier) &&
+           VerifyField<uint8_t>(verifier, VT_REQ_REP_TYPE, 1) &&
+           VerifyOffset(verifier, VT_REQ_REP) &&
+           VerifyDeviceBoundMessage(verifier, req_rep(), req_rep_type()) &&
+           verifier.EndTable();
+  }
+};
+
+template<> inline const solarxr_protocol::device::pairing::DiscoverRequest *DeviceBoundMessageHeader::req_rep_as<solarxr_protocol::device::pairing::DiscoverRequest>() const {
+  return req_rep_as_solarxr_protocol_device_pairing_DiscoverRequest();
+}
+
+template<> inline const solarxr_protocol::device::pairing::PairingRequest *DeviceBoundMessageHeader::req_rep_as<solarxr_protocol::device::pairing::PairingRequest>() const {
+  return req_rep_as_solarxr_protocol_device_pairing_PairingRequest();
+}
+
+template<> inline const solarxr_protocol::device::PingRequest *DeviceBoundMessageHeader::req_rep_as<solarxr_protocol::device::PingRequest>() const {
+  return req_rep_as_PingRequest();
+}
+
+struct DeviceBoundMessageHeaderBuilder {
+  typedef DeviceBoundMessageHeader Table;
+  flatbuffers::FlatBufferBuilder &fbb_;
+  flatbuffers::uoffset_t start_;
+  void add_req_rep_type(solarxr_protocol::device::DeviceBoundMessage req_rep_type) {
+    fbb_.AddElement<uint8_t>(DeviceBoundMessageHeader::VT_REQ_REP_TYPE, static_cast<uint8_t>(req_rep_type), 0);
+  }
+  void add_req_rep(flatbuffers::Offset<void> req_rep) {
+    fbb_.AddOffset(DeviceBoundMessageHeader::VT_REQ_REP, req_rep);
+  }
+  explicit DeviceBoundMessageHeaderBuilder(flatbuffers::FlatBufferBuilder &_fbb)
+        : fbb_(_fbb) {
+    start_ = fbb_.StartTable();
+  }
+  flatbuffers::Offset<DeviceBoundMessageHeader> Finish() {
+    const auto end = fbb_.EndTable(start_);
+    auto o = flatbuffers::Offset<DeviceBoundMessageHeader>(end);
+    return o;
+  }
+};
+
+inline flatbuffers::Offset<DeviceBoundMessageHeader> CreateDeviceBoundMessageHeader(
+    flatbuffers::FlatBufferBuilder &_fbb,
+    solarxr_protocol::device::DeviceBoundMessage req_rep_type = solarxr_protocol::device::DeviceBoundMessage::NONE,
+    flatbuffers::Offset<void> req_rep = 0) {
+  DeviceBoundMessageHeaderBuilder builder_(_fbb);
+  builder_.add_req_rep(req_rep);
+  builder_.add_req_rep_type(req_rep_type);
+  return builder_.Finish();
+}
+
+/// The `PingRequest` gets sent from the server to the device
+/// which then will respond to that ping with the `PingResponse` packet.
+///
+/// Can be used to measure RTT between the server and device.
+struct PingRequest FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
+  typedef PingRequestBuilder Builder;
+  bool Verify(flatbuffers::Verifier &verifier) const {
+    return VerifyTableStart(verifier) &&
+           verifier.EndTable();
+  }
+};
+
+struct PingRequestBuilder {
+  typedef PingRequest Table;
+  flatbuffers::FlatBufferBuilder &fbb_;
+  flatbuffers::uoffset_t start_;
+  explicit PingRequestBuilder(flatbuffers::FlatBufferBuilder &_fbb)
+        : fbb_(_fbb) {
+    start_ = fbb_.StartTable();
+  }
+  flatbuffers::Offset<PingRequest> Finish() {
+    const auto end = fbb_.EndTable(start_);
+    auto o = flatbuffers::Offset<PingRequest>(end);
+    return o;
+  }
+};
+
+inline flatbuffers::Offset<PingRequest> CreatePingRequest(
+    flatbuffers::FlatBufferBuilder &_fbb) {
+  PingRequestBuilder builder_(_fbb);
+  return builder_.Finish();
+}
+
+struct PingResponse FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
+  typedef PingResponseBuilder Builder;
+  bool Verify(flatbuffers::Verifier &verifier) const {
+    return VerifyTableStart(verifier) &&
+           verifier.EndTable();
+  }
+};
+
+struct PingResponseBuilder {
+  typedef PingResponse Table;
+  flatbuffers::FlatBufferBuilder &fbb_;
+  flatbuffers::uoffset_t start_;
+  explicit PingResponseBuilder(flatbuffers::FlatBufferBuilder &_fbb)
+        : fbb_(_fbb) {
+    start_ = fbb_.StartTable();
+  }
+  flatbuffers::Offset<PingResponse> Finish() {
+    const auto end = fbb_.EndTable(start_);
+    auto o = flatbuffers::Offset<PingResponse>(end);
+    return o;
+  }
+};
+
+inline flatbuffers::Offset<PingResponse> CreatePingResponse(
+    flatbuffers::FlatBufferBuilder &_fbb) {
+  PingResponseBuilder builder_(_fbb);
+  return builder_.Finish();
+}
+
+}  // namespace device
+
+namespace application {
 namespace data_feed {
 namespace tracker {
 
@@ -2050,8 +3218,8 @@ struct TrackerData FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
   const solarxr_protocol::datatypes::TrackerId *tracker_id() const {
     return GetPointer<const solarxr_protocol::datatypes::TrackerId *>(VT_TRACKER_ID);
   }
-  const solarxr_protocol::data_feed::tracker::TrackerInfo *info() const {
-    return GetPointer<const solarxr_protocol::data_feed::tracker::TrackerInfo *>(VT_INFO);
+  const solarxr_protocol::application::data_feed::tracker::TrackerInfo *info() const {
+    return GetPointer<const solarxr_protocol::application::data_feed::tracker::TrackerInfo *>(VT_INFO);
   }
   solarxr_protocol::datatypes::TrackerStatus status() const {
     return static_cast<solarxr_protocol::datatypes::TrackerStatus>(GetField<uint8_t>(VT_STATUS, 0));
@@ -2098,7 +3266,7 @@ struct TrackerDataBuilder {
   void add_tracker_id(flatbuffers::Offset<solarxr_protocol::datatypes::TrackerId> tracker_id) {
     fbb_.AddOffset(TrackerData::VT_TRACKER_ID, tracker_id);
   }
-  void add_info(flatbuffers::Offset<solarxr_protocol::data_feed::tracker::TrackerInfo> info) {
+  void add_info(flatbuffers::Offset<solarxr_protocol::application::data_feed::tracker::TrackerInfo> info) {
     fbb_.AddOffset(TrackerData::VT_INFO, info);
   }
   void add_status(solarxr_protocol::datatypes::TrackerStatus status) {
@@ -2133,7 +3301,7 @@ struct TrackerDataBuilder {
 inline flatbuffers::Offset<TrackerData> CreateTrackerData(
     flatbuffers::FlatBufferBuilder &_fbb,
     flatbuffers::Offset<solarxr_protocol::datatypes::TrackerId> tracker_id = 0,
-    flatbuffers::Offset<solarxr_protocol::data_feed::tracker::TrackerInfo> info = 0,
+    flatbuffers::Offset<solarxr_protocol::application::data_feed::tracker::TrackerInfo> info = 0,
     solarxr_protocol::datatypes::TrackerStatus status = solarxr_protocol::datatypes::TrackerStatus::NONE,
     const solarxr_protocol::datatypes::math::Quat *rotation = nullptr,
     const solarxr_protocol::datatypes::math::Vec3f *position = nullptr,
@@ -2385,7 +3553,7 @@ inline flatbuffers::Offset<TrackerInfo> CreateTrackerInfoDirect(
     const char *custom_name = nullptr) {
   auto display_name__ = display_name ? _fbb.CreateString(display_name) : 0;
   auto custom_name__ = custom_name ? _fbb.CreateString(custom_name) : 0;
-  return solarxr_protocol::data_feed::tracker::CreateTrackerInfo(
+  return solarxr_protocol::application::data_feed::tracker::CreateTrackerInfo(
       _fbb,
       imu_type,
       body_part,
@@ -2414,8 +3582,8 @@ struct DeviceDataMask FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
     VT_DEVICE_DATA = 6
   };
   /// Which tracker data should be sent in this data feed
-  const solarxr_protocol::data_feed::tracker::TrackerDataMask *tracker_data() const {
-    return GetPointer<const solarxr_protocol::data_feed::tracker::TrackerDataMask *>(VT_TRACKER_DATA);
+  const solarxr_protocol::application::data_feed::tracker::TrackerDataMask *tracker_data() const {
+    return GetPointer<const solarxr_protocol::application::data_feed::tracker::TrackerDataMask *>(VT_TRACKER_DATA);
   }
   /// true if device data should be sent in this data feed
   bool device_data() const {
@@ -2434,7 +3602,7 @@ struct DeviceDataMaskBuilder {
   typedef DeviceDataMask Table;
   flatbuffers::FlatBufferBuilder &fbb_;
   flatbuffers::uoffset_t start_;
-  void add_tracker_data(flatbuffers::Offset<solarxr_protocol::data_feed::tracker::TrackerDataMask> tracker_data) {
+  void add_tracker_data(flatbuffers::Offset<solarxr_protocol::application::data_feed::tracker::TrackerDataMask> tracker_data) {
     fbb_.AddOffset(DeviceDataMask::VT_TRACKER_DATA, tracker_data);
   }
   void add_device_data(bool device_data) {
@@ -2453,7 +3621,7 @@ struct DeviceDataMaskBuilder {
 
 inline flatbuffers::Offset<DeviceDataMask> CreateDeviceDataMask(
     flatbuffers::FlatBufferBuilder &_fbb,
-    flatbuffers::Offset<solarxr_protocol::data_feed::tracker::TrackerDataMask> tracker_data = 0,
+    flatbuffers::Offset<solarxr_protocol::application::data_feed::tracker::TrackerDataMask> tracker_data = 0,
     bool device_data = false) {
   DeviceDataMaskBuilder builder_(_fbb);
   builder_.add_tracker_data(tracker_data);
@@ -2490,8 +3658,8 @@ struct DeviceData FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
     return GetPointer<const solarxr_protocol::datatypes::hardware_info::HardwareStatus *>(VT_HARDWARE_STATUS);
   }
   /// Info about all trackers attached to this device
-  const flatbuffers::Vector<flatbuffers::Offset<solarxr_protocol::data_feed::tracker::TrackerData>> *trackers() const {
-    return GetPointer<const flatbuffers::Vector<flatbuffers::Offset<solarxr_protocol::data_feed::tracker::TrackerData>> *>(VT_TRACKERS);
+  const flatbuffers::Vector<flatbuffers::Offset<solarxr_protocol::application::data_feed::tracker::TrackerData>> *trackers() const {
+    return GetPointer<const flatbuffers::Vector<flatbuffers::Offset<solarxr_protocol::application::data_feed::tracker::TrackerData>> *>(VT_TRACKERS);
   }
   bool Verify(flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
@@ -2525,7 +3693,7 @@ struct DeviceDataBuilder {
   void add_hardware_status(flatbuffers::Offset<solarxr_protocol::datatypes::hardware_info::HardwareStatus> hardware_status) {
     fbb_.AddOffset(DeviceData::VT_HARDWARE_STATUS, hardware_status);
   }
-  void add_trackers(flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<solarxr_protocol::data_feed::tracker::TrackerData>>> trackers) {
+  void add_trackers(flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<solarxr_protocol::application::data_feed::tracker::TrackerData>>> trackers) {
     fbb_.AddOffset(DeviceData::VT_TRACKERS, trackers);
   }
   explicit DeviceDataBuilder(flatbuffers::FlatBufferBuilder &_fbb)
@@ -2545,7 +3713,7 @@ inline flatbuffers::Offset<DeviceData> CreateDeviceData(
     flatbuffers::Offset<flatbuffers::String> custom_name = 0,
     flatbuffers::Offset<solarxr_protocol::datatypes::hardware_info::HardwareInfo> hardware_info = 0,
     flatbuffers::Offset<solarxr_protocol::datatypes::hardware_info::HardwareStatus> hardware_status = 0,
-    flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<solarxr_protocol::data_feed::tracker::TrackerData>>> trackers = 0) {
+    flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<solarxr_protocol::application::data_feed::tracker::TrackerData>>> trackers = 0) {
   DeviceDataBuilder builder_(_fbb);
   builder_.add_trackers(trackers);
   builder_.add_hardware_status(hardware_status);
@@ -2561,10 +3729,10 @@ inline flatbuffers::Offset<DeviceData> CreateDeviceDataDirect(
     const char *custom_name = nullptr,
     flatbuffers::Offset<solarxr_protocol::datatypes::hardware_info::HardwareInfo> hardware_info = 0,
     flatbuffers::Offset<solarxr_protocol::datatypes::hardware_info::HardwareStatus> hardware_status = 0,
-    const std::vector<flatbuffers::Offset<solarxr_protocol::data_feed::tracker::TrackerData>> *trackers = nullptr) {
+    const std::vector<flatbuffers::Offset<solarxr_protocol::application::data_feed::tracker::TrackerData>> *trackers = nullptr) {
   auto custom_name__ = custom_name ? _fbb.CreateString(custom_name) : 0;
-  auto trackers__ = trackers ? _fbb.CreateVector<flatbuffers::Offset<solarxr_protocol::data_feed::tracker::TrackerData>>(*trackers) : 0;
-  return solarxr_protocol::data_feed::device_data::CreateDeviceData(
+  auto trackers__ = trackers ? _fbb.CreateVector<flatbuffers::Offset<solarxr_protocol::application::data_feed::tracker::TrackerData>>(*trackers) : 0;
+  return solarxr_protocol::application::data_feed::device_data::CreateDeviceData(
       _fbb,
       id,
       custom_name__,
@@ -2660,24 +3828,24 @@ struct DataFeedMessageHeader FLATBUFFERS_FINAL_CLASS : private flatbuffers::Tabl
     VT_MESSAGE_TYPE = 4,
     VT_MESSAGE = 6
   };
-  solarxr_protocol::data_feed::DataFeedMessage message_type() const {
-    return static_cast<solarxr_protocol::data_feed::DataFeedMessage>(GetField<uint8_t>(VT_MESSAGE_TYPE, 0));
+  solarxr_protocol::application::data_feed::DataFeedMessage message_type() const {
+    return static_cast<solarxr_protocol::application::data_feed::DataFeedMessage>(GetField<uint8_t>(VT_MESSAGE_TYPE, 0));
   }
   const void *message() const {
     return GetPointer<const void *>(VT_MESSAGE);
   }
   template<typename T> const T *message_as() const;
-  const solarxr_protocol::data_feed::PollDataFeed *message_as_PollDataFeed() const {
-    return message_type() == solarxr_protocol::data_feed::DataFeedMessage::PollDataFeed ? static_cast<const solarxr_protocol::data_feed::PollDataFeed *>(message()) : nullptr;
+  const solarxr_protocol::application::data_feed::PollDataFeed *message_as_PollDataFeed() const {
+    return message_type() == solarxr_protocol::application::data_feed::DataFeedMessage::PollDataFeed ? static_cast<const solarxr_protocol::application::data_feed::PollDataFeed *>(message()) : nullptr;
   }
-  const solarxr_protocol::data_feed::StartDataFeed *message_as_StartDataFeed() const {
-    return message_type() == solarxr_protocol::data_feed::DataFeedMessage::StartDataFeed ? static_cast<const solarxr_protocol::data_feed::StartDataFeed *>(message()) : nullptr;
+  const solarxr_protocol::application::data_feed::StartDataFeed *message_as_StartDataFeed() const {
+    return message_type() == solarxr_protocol::application::data_feed::DataFeedMessage::StartDataFeed ? static_cast<const solarxr_protocol::application::data_feed::StartDataFeed *>(message()) : nullptr;
   }
-  const solarxr_protocol::data_feed::DataFeedUpdate *message_as_DataFeedUpdate() const {
-    return message_type() == solarxr_protocol::data_feed::DataFeedMessage::DataFeedUpdate ? static_cast<const solarxr_protocol::data_feed::DataFeedUpdate *>(message()) : nullptr;
+  const solarxr_protocol::application::data_feed::DataFeedUpdate *message_as_DataFeedUpdate() const {
+    return message_type() == solarxr_protocol::application::data_feed::DataFeedMessage::DataFeedUpdate ? static_cast<const solarxr_protocol::application::data_feed::DataFeedUpdate *>(message()) : nullptr;
   }
-  const solarxr_protocol::data_feed::DataFeedConfig *message_as_DataFeedConfig() const {
-    return message_type() == solarxr_protocol::data_feed::DataFeedMessage::DataFeedConfig ? static_cast<const solarxr_protocol::data_feed::DataFeedConfig *>(message()) : nullptr;
+  const solarxr_protocol::application::data_feed::DataFeedConfig *message_as_DataFeedConfig() const {
+    return message_type() == solarxr_protocol::application::data_feed::DataFeedMessage::DataFeedConfig ? static_cast<const solarxr_protocol::application::data_feed::DataFeedConfig *>(message()) : nullptr;
   }
   bool Verify(flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
@@ -2688,19 +3856,19 @@ struct DataFeedMessageHeader FLATBUFFERS_FINAL_CLASS : private flatbuffers::Tabl
   }
 };
 
-template<> inline const solarxr_protocol::data_feed::PollDataFeed *DataFeedMessageHeader::message_as<solarxr_protocol::data_feed::PollDataFeed>() const {
+template<> inline const solarxr_protocol::application::data_feed::PollDataFeed *DataFeedMessageHeader::message_as<solarxr_protocol::application::data_feed::PollDataFeed>() const {
   return message_as_PollDataFeed();
 }
 
-template<> inline const solarxr_protocol::data_feed::StartDataFeed *DataFeedMessageHeader::message_as<solarxr_protocol::data_feed::StartDataFeed>() const {
+template<> inline const solarxr_protocol::application::data_feed::StartDataFeed *DataFeedMessageHeader::message_as<solarxr_protocol::application::data_feed::StartDataFeed>() const {
   return message_as_StartDataFeed();
 }
 
-template<> inline const solarxr_protocol::data_feed::DataFeedUpdate *DataFeedMessageHeader::message_as<solarxr_protocol::data_feed::DataFeedUpdate>() const {
+template<> inline const solarxr_protocol::application::data_feed::DataFeedUpdate *DataFeedMessageHeader::message_as<solarxr_protocol::application::data_feed::DataFeedUpdate>() const {
   return message_as_DataFeedUpdate();
 }
 
-template<> inline const solarxr_protocol::data_feed::DataFeedConfig *DataFeedMessageHeader::message_as<solarxr_protocol::data_feed::DataFeedConfig>() const {
+template<> inline const solarxr_protocol::application::data_feed::DataFeedConfig *DataFeedMessageHeader::message_as<solarxr_protocol::application::data_feed::DataFeedConfig>() const {
   return message_as_DataFeedConfig();
 }
 
@@ -2708,7 +3876,7 @@ struct DataFeedMessageHeaderBuilder {
   typedef DataFeedMessageHeader Table;
   flatbuffers::FlatBufferBuilder &fbb_;
   flatbuffers::uoffset_t start_;
-  void add_message_type(solarxr_protocol::data_feed::DataFeedMessage message_type) {
+  void add_message_type(solarxr_protocol::application::data_feed::DataFeedMessage message_type) {
     fbb_.AddElement<uint8_t>(DataFeedMessageHeader::VT_MESSAGE_TYPE, static_cast<uint8_t>(message_type), 0);
   }
   void add_message(flatbuffers::Offset<void> message) {
@@ -2727,7 +3895,7 @@ struct DataFeedMessageHeaderBuilder {
 
 inline flatbuffers::Offset<DataFeedMessageHeader> CreateDataFeedMessageHeader(
     flatbuffers::FlatBufferBuilder &_fbb,
-    solarxr_protocol::data_feed::DataFeedMessage message_type = solarxr_protocol::data_feed::DataFeedMessage::NONE,
+    solarxr_protocol::application::data_feed::DataFeedMessage message_type = solarxr_protocol::application::data_feed::DataFeedMessage::NONE,
     flatbuffers::Offset<void> message = 0) {
   DataFeedMessageHeaderBuilder builder_(_fbb);
   builder_.add_message(message);
@@ -2742,8 +3910,8 @@ struct PollDataFeed FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
   enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
     VT_CONFIG = 4
   };
-  const solarxr_protocol::data_feed::DataFeedConfig *config() const {
-    return GetPointer<const solarxr_protocol::data_feed::DataFeedConfig *>(VT_CONFIG);
+  const solarxr_protocol::application::data_feed::DataFeedConfig *config() const {
+    return GetPointer<const solarxr_protocol::application::data_feed::DataFeedConfig *>(VT_CONFIG);
   }
   bool Verify(flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
@@ -2757,7 +3925,7 @@ struct PollDataFeedBuilder {
   typedef PollDataFeed Table;
   flatbuffers::FlatBufferBuilder &fbb_;
   flatbuffers::uoffset_t start_;
-  void add_config(flatbuffers::Offset<solarxr_protocol::data_feed::DataFeedConfig> config) {
+  void add_config(flatbuffers::Offset<solarxr_protocol::application::data_feed::DataFeedConfig> config) {
     fbb_.AddOffset(PollDataFeed::VT_CONFIG, config);
   }
   explicit PollDataFeedBuilder(flatbuffers::FlatBufferBuilder &_fbb)
@@ -2773,7 +3941,7 @@ struct PollDataFeedBuilder {
 
 inline flatbuffers::Offset<PollDataFeed> CreatePollDataFeed(
     flatbuffers::FlatBufferBuilder &_fbb,
-    flatbuffers::Offset<solarxr_protocol::data_feed::DataFeedConfig> config = 0) {
+    flatbuffers::Offset<solarxr_protocol::application::data_feed::DataFeedConfig> config = 0) {
   PollDataFeedBuilder builder_(_fbb);
   builder_.add_config(config);
   return builder_.Finish();
@@ -2792,8 +3960,8 @@ struct StartDataFeed FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
   enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
     VT_DATA_FEEDS = 4
   };
-  const flatbuffers::Vector<flatbuffers::Offset<solarxr_protocol::data_feed::DataFeedConfig>> *data_feeds() const {
-    return GetPointer<const flatbuffers::Vector<flatbuffers::Offset<solarxr_protocol::data_feed::DataFeedConfig>> *>(VT_DATA_FEEDS);
+  const flatbuffers::Vector<flatbuffers::Offset<solarxr_protocol::application::data_feed::DataFeedConfig>> *data_feeds() const {
+    return GetPointer<const flatbuffers::Vector<flatbuffers::Offset<solarxr_protocol::application::data_feed::DataFeedConfig>> *>(VT_DATA_FEEDS);
   }
   bool Verify(flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
@@ -2808,7 +3976,7 @@ struct StartDataFeedBuilder {
   typedef StartDataFeed Table;
   flatbuffers::FlatBufferBuilder &fbb_;
   flatbuffers::uoffset_t start_;
-  void add_data_feeds(flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<solarxr_protocol::data_feed::DataFeedConfig>>> data_feeds) {
+  void add_data_feeds(flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<solarxr_protocol::application::data_feed::DataFeedConfig>>> data_feeds) {
     fbb_.AddOffset(StartDataFeed::VT_DATA_FEEDS, data_feeds);
   }
   explicit StartDataFeedBuilder(flatbuffers::FlatBufferBuilder &_fbb)
@@ -2824,7 +3992,7 @@ struct StartDataFeedBuilder {
 
 inline flatbuffers::Offset<StartDataFeed> CreateStartDataFeed(
     flatbuffers::FlatBufferBuilder &_fbb,
-    flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<solarxr_protocol::data_feed::DataFeedConfig>>> data_feeds = 0) {
+    flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<solarxr_protocol::application::data_feed::DataFeedConfig>>> data_feeds = 0) {
   StartDataFeedBuilder builder_(_fbb);
   builder_.add_data_feeds(data_feeds);
   return builder_.Finish();
@@ -2832,9 +4000,9 @@ inline flatbuffers::Offset<StartDataFeed> CreateStartDataFeed(
 
 inline flatbuffers::Offset<StartDataFeed> CreateStartDataFeedDirect(
     flatbuffers::FlatBufferBuilder &_fbb,
-    const std::vector<flatbuffers::Offset<solarxr_protocol::data_feed::DataFeedConfig>> *data_feeds = nullptr) {
-  auto data_feeds__ = data_feeds ? _fbb.CreateVector<flatbuffers::Offset<solarxr_protocol::data_feed::DataFeedConfig>>(*data_feeds) : 0;
-  return solarxr_protocol::data_feed::CreateStartDataFeed(
+    const std::vector<flatbuffers::Offset<solarxr_protocol::application::data_feed::DataFeedConfig>> *data_feeds = nullptr) {
+  auto data_feeds__ = data_feeds ? _fbb.CreateVector<flatbuffers::Offset<solarxr_protocol::application::data_feed::DataFeedConfig>>(*data_feeds) : 0;
+  return solarxr_protocol::application::data_feed::CreateStartDataFeed(
       _fbb,
       data_feeds__);
 }
@@ -2853,15 +4021,15 @@ struct DataFeedUpdate FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
     VT_SYNTHETIC_TRACKERS = 6,
     VT_BONES = 8
   };
-  const flatbuffers::Vector<flatbuffers::Offset<solarxr_protocol::data_feed::device_data::DeviceData>> *devices() const {
-    return GetPointer<const flatbuffers::Vector<flatbuffers::Offset<solarxr_protocol::data_feed::device_data::DeviceData>> *>(VT_DEVICES);
+  const flatbuffers::Vector<flatbuffers::Offset<solarxr_protocol::application::data_feed::device_data::DeviceData>> *devices() const {
+    return GetPointer<const flatbuffers::Vector<flatbuffers::Offset<solarxr_protocol::application::data_feed::device_data::DeviceData>> *>(VT_DEVICES);
   }
-  const flatbuffers::Vector<flatbuffers::Offset<solarxr_protocol::data_feed::tracker::TrackerData>> *synthetic_trackers() const {
-    return GetPointer<const flatbuffers::Vector<flatbuffers::Offset<solarxr_protocol::data_feed::tracker::TrackerData>> *>(VT_SYNTHETIC_TRACKERS);
+  const flatbuffers::Vector<flatbuffers::Offset<solarxr_protocol::application::data_feed::tracker::TrackerData>> *synthetic_trackers() const {
+    return GetPointer<const flatbuffers::Vector<flatbuffers::Offset<solarxr_protocol::application::data_feed::tracker::TrackerData>> *>(VT_SYNTHETIC_TRACKERS);
   }
   /// This must represent a set, where there is no more than one bone for a `BodyPart`.
-  const flatbuffers::Vector<flatbuffers::Offset<solarxr_protocol::data_feed::Bone>> *bones() const {
-    return GetPointer<const flatbuffers::Vector<flatbuffers::Offset<solarxr_protocol::data_feed::Bone>> *>(VT_BONES);
+  const flatbuffers::Vector<flatbuffers::Offset<solarxr_protocol::application::data_feed::Bone>> *bones() const {
+    return GetPointer<const flatbuffers::Vector<flatbuffers::Offset<solarxr_protocol::application::data_feed::Bone>> *>(VT_BONES);
   }
   bool Verify(flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
@@ -2882,13 +4050,13 @@ struct DataFeedUpdateBuilder {
   typedef DataFeedUpdate Table;
   flatbuffers::FlatBufferBuilder &fbb_;
   flatbuffers::uoffset_t start_;
-  void add_devices(flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<solarxr_protocol::data_feed::device_data::DeviceData>>> devices) {
+  void add_devices(flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<solarxr_protocol::application::data_feed::device_data::DeviceData>>> devices) {
     fbb_.AddOffset(DataFeedUpdate::VT_DEVICES, devices);
   }
-  void add_synthetic_trackers(flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<solarxr_protocol::data_feed::tracker::TrackerData>>> synthetic_trackers) {
+  void add_synthetic_trackers(flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<solarxr_protocol::application::data_feed::tracker::TrackerData>>> synthetic_trackers) {
     fbb_.AddOffset(DataFeedUpdate::VT_SYNTHETIC_TRACKERS, synthetic_trackers);
   }
-  void add_bones(flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<solarxr_protocol::data_feed::Bone>>> bones) {
+  void add_bones(flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<solarxr_protocol::application::data_feed::Bone>>> bones) {
     fbb_.AddOffset(DataFeedUpdate::VT_BONES, bones);
   }
   explicit DataFeedUpdateBuilder(flatbuffers::FlatBufferBuilder &_fbb)
@@ -2904,9 +4072,9 @@ struct DataFeedUpdateBuilder {
 
 inline flatbuffers::Offset<DataFeedUpdate> CreateDataFeedUpdate(
     flatbuffers::FlatBufferBuilder &_fbb,
-    flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<solarxr_protocol::data_feed::device_data::DeviceData>>> devices = 0,
-    flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<solarxr_protocol::data_feed::tracker::TrackerData>>> synthetic_trackers = 0,
-    flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<solarxr_protocol::data_feed::Bone>>> bones = 0) {
+    flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<solarxr_protocol::application::data_feed::device_data::DeviceData>>> devices = 0,
+    flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<solarxr_protocol::application::data_feed::tracker::TrackerData>>> synthetic_trackers = 0,
+    flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<solarxr_protocol::application::data_feed::Bone>>> bones = 0) {
   DataFeedUpdateBuilder builder_(_fbb);
   builder_.add_bones(bones);
   builder_.add_synthetic_trackers(synthetic_trackers);
@@ -2916,13 +4084,13 @@ inline flatbuffers::Offset<DataFeedUpdate> CreateDataFeedUpdate(
 
 inline flatbuffers::Offset<DataFeedUpdate> CreateDataFeedUpdateDirect(
     flatbuffers::FlatBufferBuilder &_fbb,
-    const std::vector<flatbuffers::Offset<solarxr_protocol::data_feed::device_data::DeviceData>> *devices = nullptr,
-    const std::vector<flatbuffers::Offset<solarxr_protocol::data_feed::tracker::TrackerData>> *synthetic_trackers = nullptr,
-    const std::vector<flatbuffers::Offset<solarxr_protocol::data_feed::Bone>> *bones = nullptr) {
-  auto devices__ = devices ? _fbb.CreateVector<flatbuffers::Offset<solarxr_protocol::data_feed::device_data::DeviceData>>(*devices) : 0;
-  auto synthetic_trackers__ = synthetic_trackers ? _fbb.CreateVector<flatbuffers::Offset<solarxr_protocol::data_feed::tracker::TrackerData>>(*synthetic_trackers) : 0;
-  auto bones__ = bones ? _fbb.CreateVector<flatbuffers::Offset<solarxr_protocol::data_feed::Bone>>(*bones) : 0;
-  return solarxr_protocol::data_feed::CreateDataFeedUpdate(
+    const std::vector<flatbuffers::Offset<solarxr_protocol::application::data_feed::device_data::DeviceData>> *devices = nullptr,
+    const std::vector<flatbuffers::Offset<solarxr_protocol::application::data_feed::tracker::TrackerData>> *synthetic_trackers = nullptr,
+    const std::vector<flatbuffers::Offset<solarxr_protocol::application::data_feed::Bone>> *bones = nullptr) {
+  auto devices__ = devices ? _fbb.CreateVector<flatbuffers::Offset<solarxr_protocol::application::data_feed::device_data::DeviceData>>(*devices) : 0;
+  auto synthetic_trackers__ = synthetic_trackers ? _fbb.CreateVector<flatbuffers::Offset<solarxr_protocol::application::data_feed::tracker::TrackerData>>(*synthetic_trackers) : 0;
+  auto bones__ = bones ? _fbb.CreateVector<flatbuffers::Offset<solarxr_protocol::application::data_feed::Bone>>(*bones) : 0;
+  return solarxr_protocol::application::data_feed::CreateDataFeedUpdate(
       _fbb,
       devices__,
       synthetic_trackers__,
@@ -2944,11 +4112,11 @@ struct DataFeedConfig FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
   uint16_t minimum_time_since_last() const {
     return GetField<uint16_t>(VT_MINIMUM_TIME_SINCE_LAST, 0);
   }
-  const solarxr_protocol::data_feed::device_data::DeviceDataMask *data_mask() const {
-    return GetPointer<const solarxr_protocol::data_feed::device_data::DeviceDataMask *>(VT_DATA_MASK);
+  const solarxr_protocol::application::data_feed::device_data::DeviceDataMask *data_mask() const {
+    return GetPointer<const solarxr_protocol::application::data_feed::device_data::DeviceDataMask *>(VT_DATA_MASK);
   }
-  const solarxr_protocol::data_feed::tracker::TrackerDataMask *synthetic_trackers_mask() const {
-    return GetPointer<const solarxr_protocol::data_feed::tracker::TrackerDataMask *>(VT_SYNTHETIC_TRACKERS_MASK);
+  const solarxr_protocol::application::data_feed::tracker::TrackerDataMask *synthetic_trackers_mask() const {
+    return GetPointer<const solarxr_protocol::application::data_feed::tracker::TrackerDataMask *>(VT_SYNTHETIC_TRACKERS_MASK);
   }
   bool bone_mask() const {
     return GetField<uint8_t>(VT_BONE_MASK, 0) != 0;
@@ -2972,10 +4140,10 @@ struct DataFeedConfigBuilder {
   void add_minimum_time_since_last(uint16_t minimum_time_since_last) {
     fbb_.AddElement<uint16_t>(DataFeedConfig::VT_MINIMUM_TIME_SINCE_LAST, minimum_time_since_last, 0);
   }
-  void add_data_mask(flatbuffers::Offset<solarxr_protocol::data_feed::device_data::DeviceDataMask> data_mask) {
+  void add_data_mask(flatbuffers::Offset<solarxr_protocol::application::data_feed::device_data::DeviceDataMask> data_mask) {
     fbb_.AddOffset(DataFeedConfig::VT_DATA_MASK, data_mask);
   }
-  void add_synthetic_trackers_mask(flatbuffers::Offset<solarxr_protocol::data_feed::tracker::TrackerDataMask> synthetic_trackers_mask) {
+  void add_synthetic_trackers_mask(flatbuffers::Offset<solarxr_protocol::application::data_feed::tracker::TrackerDataMask> synthetic_trackers_mask) {
     fbb_.AddOffset(DataFeedConfig::VT_SYNTHETIC_TRACKERS_MASK, synthetic_trackers_mask);
   }
   void add_bone_mask(bool bone_mask) {
@@ -2995,8 +4163,8 @@ struct DataFeedConfigBuilder {
 inline flatbuffers::Offset<DataFeedConfig> CreateDataFeedConfig(
     flatbuffers::FlatBufferBuilder &_fbb,
     uint16_t minimum_time_since_last = 0,
-    flatbuffers::Offset<solarxr_protocol::data_feed::device_data::DeviceDataMask> data_mask = 0,
-    flatbuffers::Offset<solarxr_protocol::data_feed::tracker::TrackerDataMask> synthetic_trackers_mask = 0,
+    flatbuffers::Offset<solarxr_protocol::application::data_feed::device_data::DeviceDataMask> data_mask = 0,
+    flatbuffers::Offset<solarxr_protocol::application::data_feed::tracker::TrackerDataMask> synthetic_trackers_mask = 0,
     bool bone_mask = false) {
   DataFeedConfigBuilder builder_(_fbb);
   builder_.add_synthetic_trackers_mask(synthetic_trackers_mask);
@@ -3205,11 +4373,11 @@ struct ModelSettings FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
     VT_TOGGLES = 4,
     VT_RATIOS = 6
   };
-  const solarxr_protocol::rpc::settings::ModelToggles *toggles() const {
-    return GetPointer<const solarxr_protocol::rpc::settings::ModelToggles *>(VT_TOGGLES);
+  const solarxr_protocol::application::rpc::settings::ModelToggles *toggles() const {
+    return GetPointer<const solarxr_protocol::application::rpc::settings::ModelToggles *>(VT_TOGGLES);
   }
-  const solarxr_protocol::rpc::settings::ModelRatios *ratios() const {
-    return GetPointer<const solarxr_protocol::rpc::settings::ModelRatios *>(VT_RATIOS);
+  const solarxr_protocol::application::rpc::settings::ModelRatios *ratios() const {
+    return GetPointer<const solarxr_protocol::application::rpc::settings::ModelRatios *>(VT_RATIOS);
   }
   bool Verify(flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
@@ -3225,10 +4393,10 @@ struct ModelSettingsBuilder {
   typedef ModelSettings Table;
   flatbuffers::FlatBufferBuilder &fbb_;
   flatbuffers::uoffset_t start_;
-  void add_toggles(flatbuffers::Offset<solarxr_protocol::rpc::settings::ModelToggles> toggles) {
+  void add_toggles(flatbuffers::Offset<solarxr_protocol::application::rpc::settings::ModelToggles> toggles) {
     fbb_.AddOffset(ModelSettings::VT_TOGGLES, toggles);
   }
-  void add_ratios(flatbuffers::Offset<solarxr_protocol::rpc::settings::ModelRatios> ratios) {
+  void add_ratios(flatbuffers::Offset<solarxr_protocol::application::rpc::settings::ModelRatios> ratios) {
     fbb_.AddOffset(ModelSettings::VT_RATIOS, ratios);
   }
   explicit ModelSettingsBuilder(flatbuffers::FlatBufferBuilder &_fbb)
@@ -3244,8 +4412,8 @@ struct ModelSettingsBuilder {
 
 inline flatbuffers::Offset<ModelSettings> CreateModelSettings(
     flatbuffers::FlatBufferBuilder &_fbb,
-    flatbuffers::Offset<solarxr_protocol::rpc::settings::ModelToggles> toggles = 0,
-    flatbuffers::Offset<solarxr_protocol::rpc::settings::ModelRatios> ratios = 0) {
+    flatbuffers::Offset<solarxr_protocol::application::rpc::settings::ModelToggles> toggles = 0,
+    flatbuffers::Offset<solarxr_protocol::application::rpc::settings::ModelRatios> ratios = 0) {
   ModelSettingsBuilder builder_(_fbb);
   builder_.add_ratios(ratios);
   builder_.add_toggles(toggles);
@@ -3266,90 +4434,96 @@ struct RpcMessageHeader FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
   const solarxr_protocol::datatypes::TransactionId *tx_id() const {
     return GetStruct<const solarxr_protocol::datatypes::TransactionId *>(VT_TX_ID);
   }
-  solarxr_protocol::rpc::RpcMessage message_type() const {
-    return static_cast<solarxr_protocol::rpc::RpcMessage>(GetField<uint8_t>(VT_MESSAGE_TYPE, 0));
+  solarxr_protocol::application::rpc::RpcMessage message_type() const {
+    return static_cast<solarxr_protocol::application::rpc::RpcMessage>(GetField<uint8_t>(VT_MESSAGE_TYPE, 0));
   }
   const void *message() const {
     return GetPointer<const void *>(VT_MESSAGE);
   }
   template<typename T> const T *message_as() const;
-  const solarxr_protocol::rpc::HeartbeatRequest *message_as_HeartbeatRequest() const {
-    return message_type() == solarxr_protocol::rpc::RpcMessage::HeartbeatRequest ? static_cast<const solarxr_protocol::rpc::HeartbeatRequest *>(message()) : nullptr;
+  const solarxr_protocol::application::rpc::HeartbeatRequest *message_as_HeartbeatRequest() const {
+    return message_type() == solarxr_protocol::application::rpc::RpcMessage::HeartbeatRequest ? static_cast<const solarxr_protocol::application::rpc::HeartbeatRequest *>(message()) : nullptr;
   }
-  const solarxr_protocol::rpc::HeartbeatResponse *message_as_HeartbeatResponse() const {
-    return message_type() == solarxr_protocol::rpc::RpcMessage::HeartbeatResponse ? static_cast<const solarxr_protocol::rpc::HeartbeatResponse *>(message()) : nullptr;
+  const solarxr_protocol::application::rpc::HeartbeatResponse *message_as_HeartbeatResponse() const {
+    return message_type() == solarxr_protocol::application::rpc::RpcMessage::HeartbeatResponse ? static_cast<const solarxr_protocol::application::rpc::HeartbeatResponse *>(message()) : nullptr;
   }
-  const solarxr_protocol::rpc::ResetRequest *message_as_ResetRequest() const {
-    return message_type() == solarxr_protocol::rpc::RpcMessage::ResetRequest ? static_cast<const solarxr_protocol::rpc::ResetRequest *>(message()) : nullptr;
+  const solarxr_protocol::application::rpc::ResetRequest *message_as_ResetRequest() const {
+    return message_type() == solarxr_protocol::application::rpc::RpcMessage::ResetRequest ? static_cast<const solarxr_protocol::application::rpc::ResetRequest *>(message()) : nullptr;
   }
-  const solarxr_protocol::rpc::AssignTrackerRequest *message_as_AssignTrackerRequest() const {
-    return message_type() == solarxr_protocol::rpc::RpcMessage::AssignTrackerRequest ? static_cast<const solarxr_protocol::rpc::AssignTrackerRequest *>(message()) : nullptr;
+  const solarxr_protocol::application::rpc::AssignTrackerRequest *message_as_AssignTrackerRequest() const {
+    return message_type() == solarxr_protocol::application::rpc::RpcMessage::AssignTrackerRequest ? static_cast<const solarxr_protocol::application::rpc::AssignTrackerRequest *>(message()) : nullptr;
   }
-  const solarxr_protocol::rpc::SettingsRequest *message_as_SettingsRequest() const {
-    return message_type() == solarxr_protocol::rpc::RpcMessage::SettingsRequest ? static_cast<const solarxr_protocol::rpc::SettingsRequest *>(message()) : nullptr;
+  const solarxr_protocol::application::rpc::SettingsRequest *message_as_SettingsRequest() const {
+    return message_type() == solarxr_protocol::application::rpc::RpcMessage::SettingsRequest ? static_cast<const solarxr_protocol::application::rpc::SettingsRequest *>(message()) : nullptr;
   }
-  const solarxr_protocol::rpc::SettingsResponse *message_as_SettingsResponse() const {
-    return message_type() == solarxr_protocol::rpc::RpcMessage::SettingsResponse ? static_cast<const solarxr_protocol::rpc::SettingsResponse *>(message()) : nullptr;
+  const solarxr_protocol::application::rpc::SettingsResponse *message_as_SettingsResponse() const {
+    return message_type() == solarxr_protocol::application::rpc::RpcMessage::SettingsResponse ? static_cast<const solarxr_protocol::application::rpc::SettingsResponse *>(message()) : nullptr;
   }
-  const solarxr_protocol::rpc::ChangeSettingsRequest *message_as_ChangeSettingsRequest() const {
-    return message_type() == solarxr_protocol::rpc::RpcMessage::ChangeSettingsRequest ? static_cast<const solarxr_protocol::rpc::ChangeSettingsRequest *>(message()) : nullptr;
+  const solarxr_protocol::application::rpc::ChangeSettingsRequest *message_as_ChangeSettingsRequest() const {
+    return message_type() == solarxr_protocol::application::rpc::RpcMessage::ChangeSettingsRequest ? static_cast<const solarxr_protocol::application::rpc::ChangeSettingsRequest *>(message()) : nullptr;
   }
-  const solarxr_protocol::rpc::RecordBVHRequest *message_as_RecordBVHRequest() const {
-    return message_type() == solarxr_protocol::rpc::RpcMessage::RecordBVHRequest ? static_cast<const solarxr_protocol::rpc::RecordBVHRequest *>(message()) : nullptr;
+  const solarxr_protocol::application::rpc::RecordBVHRequest *message_as_RecordBVHRequest() const {
+    return message_type() == solarxr_protocol::application::rpc::RpcMessage::RecordBVHRequest ? static_cast<const solarxr_protocol::application::rpc::RecordBVHRequest *>(message()) : nullptr;
   }
-  const solarxr_protocol::rpc::RecordBVHStatus *message_as_RecordBVHStatus() const {
-    return message_type() == solarxr_protocol::rpc::RpcMessage::RecordBVHStatus ? static_cast<const solarxr_protocol::rpc::RecordBVHStatus *>(message()) : nullptr;
+  const solarxr_protocol::application::rpc::RecordBVHStatus *message_as_RecordBVHStatus() const {
+    return message_type() == solarxr_protocol::application::rpc::RpcMessage::RecordBVHStatus ? static_cast<const solarxr_protocol::application::rpc::RecordBVHStatus *>(message()) : nullptr;
   }
-  const solarxr_protocol::rpc::SkeletonConfigRequest *message_as_SkeletonConfigRequest() const {
-    return message_type() == solarxr_protocol::rpc::RpcMessage::SkeletonConfigRequest ? static_cast<const solarxr_protocol::rpc::SkeletonConfigRequest *>(message()) : nullptr;
+  const solarxr_protocol::application::rpc::SkeletonConfigRequest *message_as_SkeletonConfigRequest() const {
+    return message_type() == solarxr_protocol::application::rpc::RpcMessage::SkeletonConfigRequest ? static_cast<const solarxr_protocol::application::rpc::SkeletonConfigRequest *>(message()) : nullptr;
   }
-  const solarxr_protocol::rpc::ChangeSkeletonConfigRequest *message_as_ChangeSkeletonConfigRequest() const {
-    return message_type() == solarxr_protocol::rpc::RpcMessage::ChangeSkeletonConfigRequest ? static_cast<const solarxr_protocol::rpc::ChangeSkeletonConfigRequest *>(message()) : nullptr;
+  const solarxr_protocol::application::rpc::ChangeSkeletonConfigRequest *message_as_ChangeSkeletonConfigRequest() const {
+    return message_type() == solarxr_protocol::application::rpc::RpcMessage::ChangeSkeletonConfigRequest ? static_cast<const solarxr_protocol::application::rpc::ChangeSkeletonConfigRequest *>(message()) : nullptr;
   }
-  const solarxr_protocol::rpc::SkeletonResetAllRequest *message_as_SkeletonResetAllRequest() const {
-    return message_type() == solarxr_protocol::rpc::RpcMessage::SkeletonResetAllRequest ? static_cast<const solarxr_protocol::rpc::SkeletonResetAllRequest *>(message()) : nullptr;
+  const solarxr_protocol::application::rpc::SkeletonResetAllRequest *message_as_SkeletonResetAllRequest() const {
+    return message_type() == solarxr_protocol::application::rpc::RpcMessage::SkeletonResetAllRequest ? static_cast<const solarxr_protocol::application::rpc::SkeletonResetAllRequest *>(message()) : nullptr;
   }
-  const solarxr_protocol::rpc::SkeletonConfigResponse *message_as_SkeletonConfigResponse() const {
-    return message_type() == solarxr_protocol::rpc::RpcMessage::SkeletonConfigResponse ? static_cast<const solarxr_protocol::rpc::SkeletonConfigResponse *>(message()) : nullptr;
+  const solarxr_protocol::application::rpc::SkeletonConfigResponse *message_as_SkeletonConfigResponse() const {
+    return message_type() == solarxr_protocol::application::rpc::RpcMessage::SkeletonConfigResponse ? static_cast<const solarxr_protocol::application::rpc::SkeletonConfigResponse *>(message()) : nullptr;
   }
-  const solarxr_protocol::rpc::OpenSerialRequest *message_as_OpenSerialRequest() const {
-    return message_type() == solarxr_protocol::rpc::RpcMessage::OpenSerialRequest ? static_cast<const solarxr_protocol::rpc::OpenSerialRequest *>(message()) : nullptr;
+  const solarxr_protocol::application::rpc::OpenSerialRequest *message_as_OpenSerialRequest() const {
+    return message_type() == solarxr_protocol::application::rpc::RpcMessage::OpenSerialRequest ? static_cast<const solarxr_protocol::application::rpc::OpenSerialRequest *>(message()) : nullptr;
   }
-  const solarxr_protocol::rpc::CloseSerialRequest *message_as_CloseSerialRequest() const {
-    return message_type() == solarxr_protocol::rpc::RpcMessage::CloseSerialRequest ? static_cast<const solarxr_protocol::rpc::CloseSerialRequest *>(message()) : nullptr;
+  const solarxr_protocol::application::rpc::CloseSerialRequest *message_as_CloseSerialRequest() const {
+    return message_type() == solarxr_protocol::application::rpc::RpcMessage::CloseSerialRequest ? static_cast<const solarxr_protocol::application::rpc::CloseSerialRequest *>(message()) : nullptr;
   }
-  const solarxr_protocol::rpc::SetWifiRequest *message_as_SetWifiRequest() const {
-    return message_type() == solarxr_protocol::rpc::RpcMessage::SetWifiRequest ? static_cast<const solarxr_protocol::rpc::SetWifiRequest *>(message()) : nullptr;
+  const solarxr_protocol::application::rpc::SetWifiRequest *message_as_SetWifiRequest() const {
+    return message_type() == solarxr_protocol::application::rpc::RpcMessage::SetWifiRequest ? static_cast<const solarxr_protocol::application::rpc::SetWifiRequest *>(message()) : nullptr;
   }
-  const solarxr_protocol::rpc::SerialUpdateResponse *message_as_SerialUpdateResponse() const {
-    return message_type() == solarxr_protocol::rpc::RpcMessage::SerialUpdateResponse ? static_cast<const solarxr_protocol::rpc::SerialUpdateResponse *>(message()) : nullptr;
+  const solarxr_protocol::application::rpc::SerialUpdateResponse *message_as_SerialUpdateResponse() const {
+    return message_type() == solarxr_protocol::application::rpc::RpcMessage::SerialUpdateResponse ? static_cast<const solarxr_protocol::application::rpc::SerialUpdateResponse *>(message()) : nullptr;
   }
-  const solarxr_protocol::rpc::AutoBoneProcessRequest *message_as_AutoBoneProcessRequest() const {
-    return message_type() == solarxr_protocol::rpc::RpcMessage::AutoBoneProcessRequest ? static_cast<const solarxr_protocol::rpc::AutoBoneProcessRequest *>(message()) : nullptr;
+  const solarxr_protocol::application::rpc::AutoBoneProcessRequest *message_as_AutoBoneProcessRequest() const {
+    return message_type() == solarxr_protocol::application::rpc::RpcMessage::AutoBoneProcessRequest ? static_cast<const solarxr_protocol::application::rpc::AutoBoneProcessRequest *>(message()) : nullptr;
   }
-  const solarxr_protocol::rpc::AutoBoneProcessStatusResponse *message_as_AutoBoneProcessStatusResponse() const {
-    return message_type() == solarxr_protocol::rpc::RpcMessage::AutoBoneProcessStatusResponse ? static_cast<const solarxr_protocol::rpc::AutoBoneProcessStatusResponse *>(message()) : nullptr;
+  const solarxr_protocol::application::rpc::AutoBoneProcessStatusResponse *message_as_AutoBoneProcessStatusResponse() const {
+    return message_type() == solarxr_protocol::application::rpc::RpcMessage::AutoBoneProcessStatusResponse ? static_cast<const solarxr_protocol::application::rpc::AutoBoneProcessStatusResponse *>(message()) : nullptr;
   }
-  const solarxr_protocol::rpc::AutoBoneEpochResponse *message_as_AutoBoneEpochResponse() const {
-    return message_type() == solarxr_protocol::rpc::RpcMessage::AutoBoneEpochResponse ? static_cast<const solarxr_protocol::rpc::AutoBoneEpochResponse *>(message()) : nullptr;
+  const solarxr_protocol::application::rpc::AutoBoneEpochResponse *message_as_AutoBoneEpochResponse() const {
+    return message_type() == solarxr_protocol::application::rpc::RpcMessage::AutoBoneEpochResponse ? static_cast<const solarxr_protocol::application::rpc::AutoBoneEpochResponse *>(message()) : nullptr;
   }
-  const solarxr_protocol::rpc::OverlayDisplayModeRequest *message_as_OverlayDisplayModeRequest() const {
-    return message_type() == solarxr_protocol::rpc::RpcMessage::OverlayDisplayModeRequest ? static_cast<const solarxr_protocol::rpc::OverlayDisplayModeRequest *>(message()) : nullptr;
+  const solarxr_protocol::application::rpc::OverlayDisplayModeRequest *message_as_OverlayDisplayModeRequest() const {
+    return message_type() == solarxr_protocol::application::rpc::RpcMessage::OverlayDisplayModeRequest ? static_cast<const solarxr_protocol::application::rpc::OverlayDisplayModeRequest *>(message()) : nullptr;
   }
-  const solarxr_protocol::rpc::OverlayDisplayModeChangeRequest *message_as_OverlayDisplayModeChangeRequest() const {
-    return message_type() == solarxr_protocol::rpc::RpcMessage::OverlayDisplayModeChangeRequest ? static_cast<const solarxr_protocol::rpc::OverlayDisplayModeChangeRequest *>(message()) : nullptr;
+  const solarxr_protocol::application::rpc::OverlayDisplayModeChangeRequest *message_as_OverlayDisplayModeChangeRequest() const {
+    return message_type() == solarxr_protocol::application::rpc::RpcMessage::OverlayDisplayModeChangeRequest ? static_cast<const solarxr_protocol::application::rpc::OverlayDisplayModeChangeRequest *>(message()) : nullptr;
   }
-  const solarxr_protocol::rpc::OverlayDisplayModeResponse *message_as_OverlayDisplayModeResponse() const {
-    return message_type() == solarxr_protocol::rpc::RpcMessage::OverlayDisplayModeResponse ? static_cast<const solarxr_protocol::rpc::OverlayDisplayModeResponse *>(message()) : nullptr;
+  const solarxr_protocol::application::rpc::OverlayDisplayModeResponse *message_as_OverlayDisplayModeResponse() const {
+    return message_type() == solarxr_protocol::application::rpc::RpcMessage::OverlayDisplayModeResponse ? static_cast<const solarxr_protocol::application::rpc::OverlayDisplayModeResponse *>(message()) : nullptr;
   }
-  const solarxr_protocol::rpc::SerialTrackerRebootRequest *message_as_SerialTrackerRebootRequest() const {
-    return message_type() == solarxr_protocol::rpc::RpcMessage::SerialTrackerRebootRequest ? static_cast<const solarxr_protocol::rpc::SerialTrackerRebootRequest *>(message()) : nullptr;
+  const solarxr_protocol::application::rpc::SerialTrackerRebootRequest *message_as_SerialTrackerRebootRequest() const {
+    return message_type() == solarxr_protocol::application::rpc::RpcMessage::SerialTrackerRebootRequest ? static_cast<const solarxr_protocol::application::rpc::SerialTrackerRebootRequest *>(message()) : nullptr;
   }
-  const solarxr_protocol::rpc::SerialTrackerGetInfoRequest *message_as_SerialTrackerGetInfoRequest() const {
-    return message_type() == solarxr_protocol::rpc::RpcMessage::SerialTrackerGetInfoRequest ? static_cast<const solarxr_protocol::rpc::SerialTrackerGetInfoRequest *>(message()) : nullptr;
+  const solarxr_protocol::application::rpc::SerialTrackerGetInfoRequest *message_as_SerialTrackerGetInfoRequest() const {
+    return message_type() == solarxr_protocol::application::rpc::RpcMessage::SerialTrackerGetInfoRequest ? static_cast<const solarxr_protocol::application::rpc::SerialTrackerGetInfoRequest *>(message()) : nullptr;
   }
-  const solarxr_protocol::rpc::SerialTrackerFactoryResetRequest *message_as_SerialTrackerFactoryResetRequest() const {
-    return message_type() == solarxr_protocol::rpc::RpcMessage::SerialTrackerFactoryResetRequest ? static_cast<const solarxr_protocol::rpc::SerialTrackerFactoryResetRequest *>(message()) : nullptr;
+  const solarxr_protocol::application::rpc::SerialTrackerFactoryResetRequest *message_as_SerialTrackerFactoryResetRequest() const {
+    return message_type() == solarxr_protocol::application::rpc::RpcMessage::SerialTrackerFactoryResetRequest ? static_cast<const solarxr_protocol::application::rpc::SerialTrackerFactoryResetRequest *>(message()) : nullptr;
+  }
+  const solarxr_protocol::application::rpc::DetectedDevicesRequest *message_as_DetectedDevicesRequest() const {
+    return message_type() == solarxr_protocol::application::rpc::RpcMessage::DetectedDevicesRequest ? static_cast<const solarxr_protocol::application::rpc::DetectedDevicesRequest *>(message()) : nullptr;
+  }
+  const solarxr_protocol::application::rpc::PairDeviceRequest *message_as_PairDeviceRequest() const {
+    return message_type() == solarxr_protocol::application::rpc::RpcMessage::PairDeviceRequest ? static_cast<const solarxr_protocol::application::rpc::PairDeviceRequest *>(message()) : nullptr;
   }
   bool Verify(flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
@@ -3361,108 +4535,116 @@ struct RpcMessageHeader FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
   }
 };
 
-template<> inline const solarxr_protocol::rpc::HeartbeatRequest *RpcMessageHeader::message_as<solarxr_protocol::rpc::HeartbeatRequest>() const {
+template<> inline const solarxr_protocol::application::rpc::HeartbeatRequest *RpcMessageHeader::message_as<solarxr_protocol::application::rpc::HeartbeatRequest>() const {
   return message_as_HeartbeatRequest();
 }
 
-template<> inline const solarxr_protocol::rpc::HeartbeatResponse *RpcMessageHeader::message_as<solarxr_protocol::rpc::HeartbeatResponse>() const {
+template<> inline const solarxr_protocol::application::rpc::HeartbeatResponse *RpcMessageHeader::message_as<solarxr_protocol::application::rpc::HeartbeatResponse>() const {
   return message_as_HeartbeatResponse();
 }
 
-template<> inline const solarxr_protocol::rpc::ResetRequest *RpcMessageHeader::message_as<solarxr_protocol::rpc::ResetRequest>() const {
+template<> inline const solarxr_protocol::application::rpc::ResetRequest *RpcMessageHeader::message_as<solarxr_protocol::application::rpc::ResetRequest>() const {
   return message_as_ResetRequest();
 }
 
-template<> inline const solarxr_protocol::rpc::AssignTrackerRequest *RpcMessageHeader::message_as<solarxr_protocol::rpc::AssignTrackerRequest>() const {
+template<> inline const solarxr_protocol::application::rpc::AssignTrackerRequest *RpcMessageHeader::message_as<solarxr_protocol::application::rpc::AssignTrackerRequest>() const {
   return message_as_AssignTrackerRequest();
 }
 
-template<> inline const solarxr_protocol::rpc::SettingsRequest *RpcMessageHeader::message_as<solarxr_protocol::rpc::SettingsRequest>() const {
+template<> inline const solarxr_protocol::application::rpc::SettingsRequest *RpcMessageHeader::message_as<solarxr_protocol::application::rpc::SettingsRequest>() const {
   return message_as_SettingsRequest();
 }
 
-template<> inline const solarxr_protocol::rpc::SettingsResponse *RpcMessageHeader::message_as<solarxr_protocol::rpc::SettingsResponse>() const {
+template<> inline const solarxr_protocol::application::rpc::SettingsResponse *RpcMessageHeader::message_as<solarxr_protocol::application::rpc::SettingsResponse>() const {
   return message_as_SettingsResponse();
 }
 
-template<> inline const solarxr_protocol::rpc::ChangeSettingsRequest *RpcMessageHeader::message_as<solarxr_protocol::rpc::ChangeSettingsRequest>() const {
+template<> inline const solarxr_protocol::application::rpc::ChangeSettingsRequest *RpcMessageHeader::message_as<solarxr_protocol::application::rpc::ChangeSettingsRequest>() const {
   return message_as_ChangeSettingsRequest();
 }
 
-template<> inline const solarxr_protocol::rpc::RecordBVHRequest *RpcMessageHeader::message_as<solarxr_protocol::rpc::RecordBVHRequest>() const {
+template<> inline const solarxr_protocol::application::rpc::RecordBVHRequest *RpcMessageHeader::message_as<solarxr_protocol::application::rpc::RecordBVHRequest>() const {
   return message_as_RecordBVHRequest();
 }
 
-template<> inline const solarxr_protocol::rpc::RecordBVHStatus *RpcMessageHeader::message_as<solarxr_protocol::rpc::RecordBVHStatus>() const {
+template<> inline const solarxr_protocol::application::rpc::RecordBVHStatus *RpcMessageHeader::message_as<solarxr_protocol::application::rpc::RecordBVHStatus>() const {
   return message_as_RecordBVHStatus();
 }
 
-template<> inline const solarxr_protocol::rpc::SkeletonConfigRequest *RpcMessageHeader::message_as<solarxr_protocol::rpc::SkeletonConfigRequest>() const {
+template<> inline const solarxr_protocol::application::rpc::SkeletonConfigRequest *RpcMessageHeader::message_as<solarxr_protocol::application::rpc::SkeletonConfigRequest>() const {
   return message_as_SkeletonConfigRequest();
 }
 
-template<> inline const solarxr_protocol::rpc::ChangeSkeletonConfigRequest *RpcMessageHeader::message_as<solarxr_protocol::rpc::ChangeSkeletonConfigRequest>() const {
+template<> inline const solarxr_protocol::application::rpc::ChangeSkeletonConfigRequest *RpcMessageHeader::message_as<solarxr_protocol::application::rpc::ChangeSkeletonConfigRequest>() const {
   return message_as_ChangeSkeletonConfigRequest();
 }
 
-template<> inline const solarxr_protocol::rpc::SkeletonResetAllRequest *RpcMessageHeader::message_as<solarxr_protocol::rpc::SkeletonResetAllRequest>() const {
+template<> inline const solarxr_protocol::application::rpc::SkeletonResetAllRequest *RpcMessageHeader::message_as<solarxr_protocol::application::rpc::SkeletonResetAllRequest>() const {
   return message_as_SkeletonResetAllRequest();
 }
 
-template<> inline const solarxr_protocol::rpc::SkeletonConfigResponse *RpcMessageHeader::message_as<solarxr_protocol::rpc::SkeletonConfigResponse>() const {
+template<> inline const solarxr_protocol::application::rpc::SkeletonConfigResponse *RpcMessageHeader::message_as<solarxr_protocol::application::rpc::SkeletonConfigResponse>() const {
   return message_as_SkeletonConfigResponse();
 }
 
-template<> inline const solarxr_protocol::rpc::OpenSerialRequest *RpcMessageHeader::message_as<solarxr_protocol::rpc::OpenSerialRequest>() const {
+template<> inline const solarxr_protocol::application::rpc::OpenSerialRequest *RpcMessageHeader::message_as<solarxr_protocol::application::rpc::OpenSerialRequest>() const {
   return message_as_OpenSerialRequest();
 }
 
-template<> inline const solarxr_protocol::rpc::CloseSerialRequest *RpcMessageHeader::message_as<solarxr_protocol::rpc::CloseSerialRequest>() const {
+template<> inline const solarxr_protocol::application::rpc::CloseSerialRequest *RpcMessageHeader::message_as<solarxr_protocol::application::rpc::CloseSerialRequest>() const {
   return message_as_CloseSerialRequest();
 }
 
-template<> inline const solarxr_protocol::rpc::SetWifiRequest *RpcMessageHeader::message_as<solarxr_protocol::rpc::SetWifiRequest>() const {
+template<> inline const solarxr_protocol::application::rpc::SetWifiRequest *RpcMessageHeader::message_as<solarxr_protocol::application::rpc::SetWifiRequest>() const {
   return message_as_SetWifiRequest();
 }
 
-template<> inline const solarxr_protocol::rpc::SerialUpdateResponse *RpcMessageHeader::message_as<solarxr_protocol::rpc::SerialUpdateResponse>() const {
+template<> inline const solarxr_protocol::application::rpc::SerialUpdateResponse *RpcMessageHeader::message_as<solarxr_protocol::application::rpc::SerialUpdateResponse>() const {
   return message_as_SerialUpdateResponse();
 }
 
-template<> inline const solarxr_protocol::rpc::AutoBoneProcessRequest *RpcMessageHeader::message_as<solarxr_protocol::rpc::AutoBoneProcessRequest>() const {
+template<> inline const solarxr_protocol::application::rpc::AutoBoneProcessRequest *RpcMessageHeader::message_as<solarxr_protocol::application::rpc::AutoBoneProcessRequest>() const {
   return message_as_AutoBoneProcessRequest();
 }
 
-template<> inline const solarxr_protocol::rpc::AutoBoneProcessStatusResponse *RpcMessageHeader::message_as<solarxr_protocol::rpc::AutoBoneProcessStatusResponse>() const {
+template<> inline const solarxr_protocol::application::rpc::AutoBoneProcessStatusResponse *RpcMessageHeader::message_as<solarxr_protocol::application::rpc::AutoBoneProcessStatusResponse>() const {
   return message_as_AutoBoneProcessStatusResponse();
 }
 
-template<> inline const solarxr_protocol::rpc::AutoBoneEpochResponse *RpcMessageHeader::message_as<solarxr_protocol::rpc::AutoBoneEpochResponse>() const {
+template<> inline const solarxr_protocol::application::rpc::AutoBoneEpochResponse *RpcMessageHeader::message_as<solarxr_protocol::application::rpc::AutoBoneEpochResponse>() const {
   return message_as_AutoBoneEpochResponse();
 }
 
-template<> inline const solarxr_protocol::rpc::OverlayDisplayModeRequest *RpcMessageHeader::message_as<solarxr_protocol::rpc::OverlayDisplayModeRequest>() const {
+template<> inline const solarxr_protocol::application::rpc::OverlayDisplayModeRequest *RpcMessageHeader::message_as<solarxr_protocol::application::rpc::OverlayDisplayModeRequest>() const {
   return message_as_OverlayDisplayModeRequest();
 }
 
-template<> inline const solarxr_protocol::rpc::OverlayDisplayModeChangeRequest *RpcMessageHeader::message_as<solarxr_protocol::rpc::OverlayDisplayModeChangeRequest>() const {
+template<> inline const solarxr_protocol::application::rpc::OverlayDisplayModeChangeRequest *RpcMessageHeader::message_as<solarxr_protocol::application::rpc::OverlayDisplayModeChangeRequest>() const {
   return message_as_OverlayDisplayModeChangeRequest();
 }
 
-template<> inline const solarxr_protocol::rpc::OverlayDisplayModeResponse *RpcMessageHeader::message_as<solarxr_protocol::rpc::OverlayDisplayModeResponse>() const {
+template<> inline const solarxr_protocol::application::rpc::OverlayDisplayModeResponse *RpcMessageHeader::message_as<solarxr_protocol::application::rpc::OverlayDisplayModeResponse>() const {
   return message_as_OverlayDisplayModeResponse();
 }
 
-template<> inline const solarxr_protocol::rpc::SerialTrackerRebootRequest *RpcMessageHeader::message_as<solarxr_protocol::rpc::SerialTrackerRebootRequest>() const {
+template<> inline const solarxr_protocol::application::rpc::SerialTrackerRebootRequest *RpcMessageHeader::message_as<solarxr_protocol::application::rpc::SerialTrackerRebootRequest>() const {
   return message_as_SerialTrackerRebootRequest();
 }
 
-template<> inline const solarxr_protocol::rpc::SerialTrackerGetInfoRequest *RpcMessageHeader::message_as<solarxr_protocol::rpc::SerialTrackerGetInfoRequest>() const {
+template<> inline const solarxr_protocol::application::rpc::SerialTrackerGetInfoRequest *RpcMessageHeader::message_as<solarxr_protocol::application::rpc::SerialTrackerGetInfoRequest>() const {
   return message_as_SerialTrackerGetInfoRequest();
 }
 
-template<> inline const solarxr_protocol::rpc::SerialTrackerFactoryResetRequest *RpcMessageHeader::message_as<solarxr_protocol::rpc::SerialTrackerFactoryResetRequest>() const {
+template<> inline const solarxr_protocol::application::rpc::SerialTrackerFactoryResetRequest *RpcMessageHeader::message_as<solarxr_protocol::application::rpc::SerialTrackerFactoryResetRequest>() const {
   return message_as_SerialTrackerFactoryResetRequest();
+}
+
+template<> inline const solarxr_protocol::application::rpc::DetectedDevicesRequest *RpcMessageHeader::message_as<solarxr_protocol::application::rpc::DetectedDevicesRequest>() const {
+  return message_as_DetectedDevicesRequest();
+}
+
+template<> inline const solarxr_protocol::application::rpc::PairDeviceRequest *RpcMessageHeader::message_as<solarxr_protocol::application::rpc::PairDeviceRequest>() const {
+  return message_as_PairDeviceRequest();
 }
 
 struct RpcMessageHeaderBuilder {
@@ -3472,7 +4654,7 @@ struct RpcMessageHeaderBuilder {
   void add_tx_id(const solarxr_protocol::datatypes::TransactionId *tx_id) {
     fbb_.AddStruct(RpcMessageHeader::VT_TX_ID, tx_id);
   }
-  void add_message_type(solarxr_protocol::rpc::RpcMessage message_type) {
+  void add_message_type(solarxr_protocol::application::rpc::RpcMessage message_type) {
     fbb_.AddElement<uint8_t>(RpcMessageHeader::VT_MESSAGE_TYPE, static_cast<uint8_t>(message_type), 0);
   }
   void add_message(flatbuffers::Offset<void> message) {
@@ -3492,7 +4674,7 @@ struct RpcMessageHeaderBuilder {
 inline flatbuffers::Offset<RpcMessageHeader> CreateRpcMessageHeader(
     flatbuffers::FlatBufferBuilder &_fbb,
     const solarxr_protocol::datatypes::TransactionId *tx_id = nullptr,
-    solarxr_protocol::rpc::RpcMessage message_type = solarxr_protocol::rpc::RpcMessage::NONE,
+    solarxr_protocol::application::rpc::RpcMessage message_type = solarxr_protocol::application::rpc::RpcMessage::NONE,
     flatbuffers::Offset<void> message = 0) {
   RpcMessageHeaderBuilder builder_(_fbb);
   builder_.add_message(message);
@@ -3564,8 +4746,8 @@ struct ResetRequest FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
   enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
     VT_RESET_TYPE = 4
   };
-  solarxr_protocol::rpc::ResetType reset_type() const {
-    return static_cast<solarxr_protocol::rpc::ResetType>(GetField<uint8_t>(VT_RESET_TYPE, 0));
+  solarxr_protocol::application::rpc::ResetType reset_type() const {
+    return static_cast<solarxr_protocol::application::rpc::ResetType>(GetField<uint8_t>(VT_RESET_TYPE, 0));
   }
   bool Verify(flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
@@ -3578,7 +4760,7 @@ struct ResetRequestBuilder {
   typedef ResetRequest Table;
   flatbuffers::FlatBufferBuilder &fbb_;
   flatbuffers::uoffset_t start_;
-  void add_reset_type(solarxr_protocol::rpc::ResetType reset_type) {
+  void add_reset_type(solarxr_protocol::application::rpc::ResetType reset_type) {
     fbb_.AddElement<uint8_t>(ResetRequest::VT_RESET_TYPE, static_cast<uint8_t>(reset_type), 0);
   }
   explicit ResetRequestBuilder(flatbuffers::FlatBufferBuilder &_fbb)
@@ -3594,7 +4776,7 @@ struct ResetRequestBuilder {
 
 inline flatbuffers::Offset<ResetRequest> CreateResetRequest(
     flatbuffers::FlatBufferBuilder &_fbb,
-    solarxr_protocol::rpc::ResetType reset_type = solarxr_protocol::rpc::ResetType::Quick) {
+    solarxr_protocol::application::rpc::ResetType reset_type = solarxr_protocol::application::rpc::ResetType::Quick) {
   ResetRequestBuilder builder_(_fbb);
   builder_.add_reset_type(reset_type);
   return builder_.Finish();
@@ -3709,7 +4891,7 @@ inline flatbuffers::Offset<AssignTrackerRequest> CreateAssignTrackerRequestDirec
     const solarxr_protocol::datatypes::math::Quat *mounting_rotation = nullptr,
     const char *display_name = nullptr) {
   auto display_name__ = display_name ? _fbb.CreateString(display_name) : 0;
-  return solarxr_protocol::rpc::CreateAssignTrackerRequest(
+  return solarxr_protocol::application::rpc::CreateAssignTrackerRequest(
       _fbb,
       tracker_id,
       body_position,
@@ -3753,14 +4935,14 @@ struct SettingsResponse FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
     VT_FILTERING = 6,
     VT_MODEL_SETTINGS = 8
   };
-  const solarxr_protocol::rpc::SteamVRTrackersSetting *steam_vr_trackers() const {
-    return GetPointer<const solarxr_protocol::rpc::SteamVRTrackersSetting *>(VT_STEAM_VR_TRACKERS);
+  const solarxr_protocol::application::rpc::SteamVRTrackersSetting *steam_vr_trackers() const {
+    return GetPointer<const solarxr_protocol::application::rpc::SteamVRTrackersSetting *>(VT_STEAM_VR_TRACKERS);
   }
-  const solarxr_protocol::rpc::FilteringSettings *filtering() const {
-    return GetPointer<const solarxr_protocol::rpc::FilteringSettings *>(VT_FILTERING);
+  const solarxr_protocol::application::rpc::FilteringSettings *filtering() const {
+    return GetPointer<const solarxr_protocol::application::rpc::FilteringSettings *>(VT_FILTERING);
   }
-  const solarxr_protocol::rpc::settings::ModelSettings *model_settings() const {
-    return GetPointer<const solarxr_protocol::rpc::settings::ModelSettings *>(VT_MODEL_SETTINGS);
+  const solarxr_protocol::application::rpc::settings::ModelSettings *model_settings() const {
+    return GetPointer<const solarxr_protocol::application::rpc::settings::ModelSettings *>(VT_MODEL_SETTINGS);
   }
   bool Verify(flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
@@ -3778,13 +4960,13 @@ struct SettingsResponseBuilder {
   typedef SettingsResponse Table;
   flatbuffers::FlatBufferBuilder &fbb_;
   flatbuffers::uoffset_t start_;
-  void add_steam_vr_trackers(flatbuffers::Offset<solarxr_protocol::rpc::SteamVRTrackersSetting> steam_vr_trackers) {
+  void add_steam_vr_trackers(flatbuffers::Offset<solarxr_protocol::application::rpc::SteamVRTrackersSetting> steam_vr_trackers) {
     fbb_.AddOffset(SettingsResponse::VT_STEAM_VR_TRACKERS, steam_vr_trackers);
   }
-  void add_filtering(flatbuffers::Offset<solarxr_protocol::rpc::FilteringSettings> filtering) {
+  void add_filtering(flatbuffers::Offset<solarxr_protocol::application::rpc::FilteringSettings> filtering) {
     fbb_.AddOffset(SettingsResponse::VT_FILTERING, filtering);
   }
-  void add_model_settings(flatbuffers::Offset<solarxr_protocol::rpc::settings::ModelSettings> model_settings) {
+  void add_model_settings(flatbuffers::Offset<solarxr_protocol::application::rpc::settings::ModelSettings> model_settings) {
     fbb_.AddOffset(SettingsResponse::VT_MODEL_SETTINGS, model_settings);
   }
   explicit SettingsResponseBuilder(flatbuffers::FlatBufferBuilder &_fbb)
@@ -3800,9 +4982,9 @@ struct SettingsResponseBuilder {
 
 inline flatbuffers::Offset<SettingsResponse> CreateSettingsResponse(
     flatbuffers::FlatBufferBuilder &_fbb,
-    flatbuffers::Offset<solarxr_protocol::rpc::SteamVRTrackersSetting> steam_vr_trackers = 0,
-    flatbuffers::Offset<solarxr_protocol::rpc::FilteringSettings> filtering = 0,
-    flatbuffers::Offset<solarxr_protocol::rpc::settings::ModelSettings> model_settings = 0) {
+    flatbuffers::Offset<solarxr_protocol::application::rpc::SteamVRTrackersSetting> steam_vr_trackers = 0,
+    flatbuffers::Offset<solarxr_protocol::application::rpc::FilteringSettings> filtering = 0,
+    flatbuffers::Offset<solarxr_protocol::application::rpc::settings::ModelSettings> model_settings = 0) {
   SettingsResponseBuilder builder_(_fbb);
   builder_.add_model_settings(model_settings);
   builder_.add_filtering(filtering);
@@ -3817,14 +4999,14 @@ struct ChangeSettingsRequest FLATBUFFERS_FINAL_CLASS : private flatbuffers::Tabl
     VT_FILTERING = 6,
     VT_MODEL_SETTINGS = 8
   };
-  const solarxr_protocol::rpc::SteamVRTrackersSetting *steam_vr_trackers() const {
-    return GetPointer<const solarxr_protocol::rpc::SteamVRTrackersSetting *>(VT_STEAM_VR_TRACKERS);
+  const solarxr_protocol::application::rpc::SteamVRTrackersSetting *steam_vr_trackers() const {
+    return GetPointer<const solarxr_protocol::application::rpc::SteamVRTrackersSetting *>(VT_STEAM_VR_TRACKERS);
   }
-  const solarxr_protocol::rpc::FilteringSettings *filtering() const {
-    return GetPointer<const solarxr_protocol::rpc::FilteringSettings *>(VT_FILTERING);
+  const solarxr_protocol::application::rpc::FilteringSettings *filtering() const {
+    return GetPointer<const solarxr_protocol::application::rpc::FilteringSettings *>(VT_FILTERING);
   }
-  const solarxr_protocol::rpc::settings::ModelSettings *model_settings() const {
-    return GetPointer<const solarxr_protocol::rpc::settings::ModelSettings *>(VT_MODEL_SETTINGS);
+  const solarxr_protocol::application::rpc::settings::ModelSettings *model_settings() const {
+    return GetPointer<const solarxr_protocol::application::rpc::settings::ModelSettings *>(VT_MODEL_SETTINGS);
   }
   bool Verify(flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
@@ -3842,13 +5024,13 @@ struct ChangeSettingsRequestBuilder {
   typedef ChangeSettingsRequest Table;
   flatbuffers::FlatBufferBuilder &fbb_;
   flatbuffers::uoffset_t start_;
-  void add_steam_vr_trackers(flatbuffers::Offset<solarxr_protocol::rpc::SteamVRTrackersSetting> steam_vr_trackers) {
+  void add_steam_vr_trackers(flatbuffers::Offset<solarxr_protocol::application::rpc::SteamVRTrackersSetting> steam_vr_trackers) {
     fbb_.AddOffset(ChangeSettingsRequest::VT_STEAM_VR_TRACKERS, steam_vr_trackers);
   }
-  void add_filtering(flatbuffers::Offset<solarxr_protocol::rpc::FilteringSettings> filtering) {
+  void add_filtering(flatbuffers::Offset<solarxr_protocol::application::rpc::FilteringSettings> filtering) {
     fbb_.AddOffset(ChangeSettingsRequest::VT_FILTERING, filtering);
   }
-  void add_model_settings(flatbuffers::Offset<solarxr_protocol::rpc::settings::ModelSettings> model_settings) {
+  void add_model_settings(flatbuffers::Offset<solarxr_protocol::application::rpc::settings::ModelSettings> model_settings) {
     fbb_.AddOffset(ChangeSettingsRequest::VT_MODEL_SETTINGS, model_settings);
   }
   explicit ChangeSettingsRequestBuilder(flatbuffers::FlatBufferBuilder &_fbb)
@@ -3864,9 +5046,9 @@ struct ChangeSettingsRequestBuilder {
 
 inline flatbuffers::Offset<ChangeSettingsRequest> CreateChangeSettingsRequest(
     flatbuffers::FlatBufferBuilder &_fbb,
-    flatbuffers::Offset<solarxr_protocol::rpc::SteamVRTrackersSetting> steam_vr_trackers = 0,
-    flatbuffers::Offset<solarxr_protocol::rpc::FilteringSettings> filtering = 0,
-    flatbuffers::Offset<solarxr_protocol::rpc::settings::ModelSettings> model_settings = 0) {
+    flatbuffers::Offset<solarxr_protocol::application::rpc::SteamVRTrackersSetting> steam_vr_trackers = 0,
+    flatbuffers::Offset<solarxr_protocol::application::rpc::FilteringSettings> filtering = 0,
+    flatbuffers::Offset<solarxr_protocol::application::rpc::settings::ModelSettings> model_settings = 0) {
   ChangeSettingsRequestBuilder builder_(_fbb);
   builder_.add_model_settings(model_settings);
   builder_.add_filtering(filtering);
@@ -4095,8 +5277,8 @@ struct SkeletonPart FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
     VT_BONE = 4,
     VT_VALUE = 6
   };
-  solarxr_protocol::rpc::SkeletonBone bone() const {
-    return static_cast<solarxr_protocol::rpc::SkeletonBone>(GetField<uint8_t>(VT_BONE, 0));
+  solarxr_protocol::application::rpc::SkeletonBone bone() const {
+    return static_cast<solarxr_protocol::application::rpc::SkeletonBone>(GetField<uint8_t>(VT_BONE, 0));
   }
   float value() const {
     return GetField<float>(VT_VALUE, 0.0f);
@@ -4113,7 +5295,7 @@ struct SkeletonPartBuilder {
   typedef SkeletonPart Table;
   flatbuffers::FlatBufferBuilder &fbb_;
   flatbuffers::uoffset_t start_;
-  void add_bone(solarxr_protocol::rpc::SkeletonBone bone) {
+  void add_bone(solarxr_protocol::application::rpc::SkeletonBone bone) {
     fbb_.AddElement<uint8_t>(SkeletonPart::VT_BONE, static_cast<uint8_t>(bone), 0);
   }
   void add_value(float value) {
@@ -4132,7 +5314,7 @@ struct SkeletonPartBuilder {
 
 inline flatbuffers::Offset<SkeletonPart> CreateSkeletonPart(
     flatbuffers::FlatBufferBuilder &_fbb,
-    solarxr_protocol::rpc::SkeletonBone bone = solarxr_protocol::rpc::SkeletonBone::NONE,
+    solarxr_protocol::application::rpc::SkeletonBone bone = solarxr_protocol::application::rpc::SkeletonBone::NONE,
     float value = 0.0f) {
   SkeletonPartBuilder builder_(_fbb);
   builder_.add_value(value);
@@ -4174,8 +5356,8 @@ struct SkeletonConfigResponse FLATBUFFERS_FINAL_CLASS : private flatbuffers::Tab
   enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
     VT_SKELETON_PARTS = 4
   };
-  const flatbuffers::Vector<flatbuffers::Offset<solarxr_protocol::rpc::SkeletonPart>> *skeleton_parts() const {
-    return GetPointer<const flatbuffers::Vector<flatbuffers::Offset<solarxr_protocol::rpc::SkeletonPart>> *>(VT_SKELETON_PARTS);
+  const flatbuffers::Vector<flatbuffers::Offset<solarxr_protocol::application::rpc::SkeletonPart>> *skeleton_parts() const {
+    return GetPointer<const flatbuffers::Vector<flatbuffers::Offset<solarxr_protocol::application::rpc::SkeletonPart>> *>(VT_SKELETON_PARTS);
   }
   bool Verify(flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
@@ -4190,7 +5372,7 @@ struct SkeletonConfigResponseBuilder {
   typedef SkeletonConfigResponse Table;
   flatbuffers::FlatBufferBuilder &fbb_;
   flatbuffers::uoffset_t start_;
-  void add_skeleton_parts(flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<solarxr_protocol::rpc::SkeletonPart>>> skeleton_parts) {
+  void add_skeleton_parts(flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<solarxr_protocol::application::rpc::SkeletonPart>>> skeleton_parts) {
     fbb_.AddOffset(SkeletonConfigResponse::VT_SKELETON_PARTS, skeleton_parts);
   }
   explicit SkeletonConfigResponseBuilder(flatbuffers::FlatBufferBuilder &_fbb)
@@ -4206,7 +5388,7 @@ struct SkeletonConfigResponseBuilder {
 
 inline flatbuffers::Offset<SkeletonConfigResponse> CreateSkeletonConfigResponse(
     flatbuffers::FlatBufferBuilder &_fbb,
-    flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<solarxr_protocol::rpc::SkeletonPart>>> skeleton_parts = 0) {
+    flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<solarxr_protocol::application::rpc::SkeletonPart>>> skeleton_parts = 0) {
   SkeletonConfigResponseBuilder builder_(_fbb);
   builder_.add_skeleton_parts(skeleton_parts);
   return builder_.Finish();
@@ -4214,9 +5396,9 @@ inline flatbuffers::Offset<SkeletonConfigResponse> CreateSkeletonConfigResponse(
 
 inline flatbuffers::Offset<SkeletonConfigResponse> CreateSkeletonConfigResponseDirect(
     flatbuffers::FlatBufferBuilder &_fbb,
-    const std::vector<flatbuffers::Offset<solarxr_protocol::rpc::SkeletonPart>> *skeleton_parts = nullptr) {
-  auto skeleton_parts__ = skeleton_parts ? _fbb.CreateVector<flatbuffers::Offset<solarxr_protocol::rpc::SkeletonPart>>(*skeleton_parts) : 0;
-  return solarxr_protocol::rpc::CreateSkeletonConfigResponse(
+    const std::vector<flatbuffers::Offset<solarxr_protocol::application::rpc::SkeletonPart>> *skeleton_parts = nullptr) {
+  auto skeleton_parts__ = skeleton_parts ? _fbb.CreateVector<flatbuffers::Offset<solarxr_protocol::application::rpc::SkeletonPart>>(*skeleton_parts) : 0;
+  return solarxr_protocol::application::rpc::CreateSkeletonConfigResponse(
       _fbb,
       skeleton_parts__);
 }
@@ -4256,8 +5438,8 @@ struct ChangeSkeletonConfigRequest FLATBUFFERS_FINAL_CLASS : private flatbuffers
     VT_BONE = 4,
     VT_VALUE = 6
   };
-  solarxr_protocol::rpc::SkeletonBone bone() const {
-    return static_cast<solarxr_protocol::rpc::SkeletonBone>(GetField<uint8_t>(VT_BONE, 0));
+  solarxr_protocol::application::rpc::SkeletonBone bone() const {
+    return static_cast<solarxr_protocol::application::rpc::SkeletonBone>(GetField<uint8_t>(VT_BONE, 0));
   }
   float value() const {
     return GetField<float>(VT_VALUE, 0.0f);
@@ -4274,7 +5456,7 @@ struct ChangeSkeletonConfigRequestBuilder {
   typedef ChangeSkeletonConfigRequest Table;
   flatbuffers::FlatBufferBuilder &fbb_;
   flatbuffers::uoffset_t start_;
-  void add_bone(solarxr_protocol::rpc::SkeletonBone bone) {
+  void add_bone(solarxr_protocol::application::rpc::SkeletonBone bone) {
     fbb_.AddElement<uint8_t>(ChangeSkeletonConfigRequest::VT_BONE, static_cast<uint8_t>(bone), 0);
   }
   void add_value(float value) {
@@ -4293,7 +5475,7 @@ struct ChangeSkeletonConfigRequestBuilder {
 
 inline flatbuffers::Offset<ChangeSkeletonConfigRequest> CreateChangeSkeletonConfigRequest(
     flatbuffers::FlatBufferBuilder &_fbb,
-    solarxr_protocol::rpc::SkeletonBone bone = solarxr_protocol::rpc::SkeletonBone::NONE,
+    solarxr_protocol::application::rpc::SkeletonBone bone = solarxr_protocol::application::rpc::SkeletonBone::NONE,
     float value = 0.0f) {
   ChangeSkeletonConfigRequestBuilder builder_(_fbb);
   builder_.add_value(value);
@@ -4418,7 +5600,7 @@ inline flatbuffers::Offset<SetWifiRequest> CreateSetWifiRequestDirect(
     const char *password = nullptr) {
   auto ssid__ = ssid ? _fbb.CreateString(ssid) : 0;
   auto password__ = password ? _fbb.CreateString(password) : 0;
-  return solarxr_protocol::rpc::CreateSetWifiRequest(
+  return solarxr_protocol::application::rpc::CreateSetWifiRequest(
       _fbb,
       ssid__,
       password__);
@@ -4481,7 +5663,7 @@ inline flatbuffers::Offset<SerialUpdateResponse> CreateSerialUpdateResponseDirec
     const char *log = nullptr,
     bool closed = false) {
   auto log__ = log ? _fbb.CreateString(log) : 0;
-  return solarxr_protocol::rpc::CreateSerialUpdateResponse(
+  return solarxr_protocol::application::rpc::CreateSerialUpdateResponse(
       _fbb,
       log__,
       closed);
@@ -4582,8 +5764,8 @@ struct AutoBoneProcessRequest FLATBUFFERS_FINAL_CLASS : private flatbuffers::Tab
   enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
     VT_PROCESS_TYPE = 4
   };
-  solarxr_protocol::rpc::AutoBoneProcessType process_type() const {
-    return static_cast<solarxr_protocol::rpc::AutoBoneProcessType>(GetField<uint8_t>(VT_PROCESS_TYPE, 0));
+  solarxr_protocol::application::rpc::AutoBoneProcessType process_type() const {
+    return static_cast<solarxr_protocol::application::rpc::AutoBoneProcessType>(GetField<uint8_t>(VT_PROCESS_TYPE, 0));
   }
   bool Verify(flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
@@ -4596,7 +5778,7 @@ struct AutoBoneProcessRequestBuilder {
   typedef AutoBoneProcessRequest Table;
   flatbuffers::FlatBufferBuilder &fbb_;
   flatbuffers::uoffset_t start_;
-  void add_process_type(solarxr_protocol::rpc::AutoBoneProcessType process_type) {
+  void add_process_type(solarxr_protocol::application::rpc::AutoBoneProcessType process_type) {
     fbb_.AddElement<uint8_t>(AutoBoneProcessRequest::VT_PROCESS_TYPE, static_cast<uint8_t>(process_type), 0);
   }
   explicit AutoBoneProcessRequestBuilder(flatbuffers::FlatBufferBuilder &_fbb)
@@ -4612,7 +5794,7 @@ struct AutoBoneProcessRequestBuilder {
 
 inline flatbuffers::Offset<AutoBoneProcessRequest> CreateAutoBoneProcessRequest(
     flatbuffers::FlatBufferBuilder &_fbb,
-    solarxr_protocol::rpc::AutoBoneProcessType process_type = solarxr_protocol::rpc::AutoBoneProcessType::NONE) {
+    solarxr_protocol::application::rpc::AutoBoneProcessType process_type = solarxr_protocol::application::rpc::AutoBoneProcessType::NONE) {
   AutoBoneProcessRequestBuilder builder_(_fbb);
   builder_.add_process_type(process_type);
   return builder_.Finish();
@@ -4628,8 +5810,8 @@ struct AutoBoneProcessStatusResponse FLATBUFFERS_FINAL_CLASS : private flatbuffe
     VT_COMPLETED = 12,
     VT_SUCCESS = 14
   };
-  solarxr_protocol::rpc::AutoBoneProcessType process_type() const {
-    return static_cast<solarxr_protocol::rpc::AutoBoneProcessType>(GetField<uint8_t>(VT_PROCESS_TYPE, 0));
+  solarxr_protocol::application::rpc::AutoBoneProcessType process_type() const {
+    return static_cast<solarxr_protocol::application::rpc::AutoBoneProcessType>(GetField<uint8_t>(VT_PROCESS_TYPE, 0));
   }
   const flatbuffers::String *message() const {
     return GetPointer<const flatbuffers::String *>(VT_MESSAGE);
@@ -4663,7 +5845,7 @@ struct AutoBoneProcessStatusResponseBuilder {
   typedef AutoBoneProcessStatusResponse Table;
   flatbuffers::FlatBufferBuilder &fbb_;
   flatbuffers::uoffset_t start_;
-  void add_process_type(solarxr_protocol::rpc::AutoBoneProcessType process_type) {
+  void add_process_type(solarxr_protocol::application::rpc::AutoBoneProcessType process_type) {
     fbb_.AddElement<uint8_t>(AutoBoneProcessStatusResponse::VT_PROCESS_TYPE, static_cast<uint8_t>(process_type), 0);
   }
   void add_message(flatbuffers::Offset<flatbuffers::String> message) {
@@ -4694,7 +5876,7 @@ struct AutoBoneProcessStatusResponseBuilder {
 
 inline flatbuffers::Offset<AutoBoneProcessStatusResponse> CreateAutoBoneProcessStatusResponse(
     flatbuffers::FlatBufferBuilder &_fbb,
-    solarxr_protocol::rpc::AutoBoneProcessType process_type = solarxr_protocol::rpc::AutoBoneProcessType::NONE,
+    solarxr_protocol::application::rpc::AutoBoneProcessType process_type = solarxr_protocol::application::rpc::AutoBoneProcessType::NONE,
     flatbuffers::Offset<flatbuffers::String> message = 0,
     uint32_t current = 0,
     uint32_t total = 0,
@@ -4712,14 +5894,14 @@ inline flatbuffers::Offset<AutoBoneProcessStatusResponse> CreateAutoBoneProcessS
 
 inline flatbuffers::Offset<AutoBoneProcessStatusResponse> CreateAutoBoneProcessStatusResponseDirect(
     flatbuffers::FlatBufferBuilder &_fbb,
-    solarxr_protocol::rpc::AutoBoneProcessType process_type = solarxr_protocol::rpc::AutoBoneProcessType::NONE,
+    solarxr_protocol::application::rpc::AutoBoneProcessType process_type = solarxr_protocol::application::rpc::AutoBoneProcessType::NONE,
     const char *message = nullptr,
     uint32_t current = 0,
     uint32_t total = 0,
     bool completed = false,
     bool success = false) {
   auto message__ = message ? _fbb.CreateString(message) : 0;
-  return solarxr_protocol::rpc::CreateAutoBoneProcessStatusResponse(
+  return solarxr_protocol::application::rpc::CreateAutoBoneProcessStatusResponse(
       _fbb,
       process_type,
       message__,
@@ -4746,8 +5928,8 @@ struct AutoBoneEpochResponse FLATBUFFERS_FINAL_CLASS : private flatbuffers::Tabl
   float epoch_error() const {
     return GetField<float>(VT_EPOCH_ERROR, 0.0f);
   }
-  const flatbuffers::Vector<flatbuffers::Offset<solarxr_protocol::rpc::SkeletonPart>> *adjusted_skeleton_parts() const {
-    return GetPointer<const flatbuffers::Vector<flatbuffers::Offset<solarxr_protocol::rpc::SkeletonPart>> *>(VT_ADJUSTED_SKELETON_PARTS);
+  const flatbuffers::Vector<flatbuffers::Offset<solarxr_protocol::application::rpc::SkeletonPart>> *adjusted_skeleton_parts() const {
+    return GetPointer<const flatbuffers::Vector<flatbuffers::Offset<solarxr_protocol::application::rpc::SkeletonPart>> *>(VT_ADJUSTED_SKELETON_PARTS);
   }
   bool Verify(flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
@@ -4774,7 +5956,7 @@ struct AutoBoneEpochResponseBuilder {
   void add_epoch_error(float epoch_error) {
     fbb_.AddElement<float>(AutoBoneEpochResponse::VT_EPOCH_ERROR, epoch_error, 0.0f);
   }
-  void add_adjusted_skeleton_parts(flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<solarxr_protocol::rpc::SkeletonPart>>> adjusted_skeleton_parts) {
+  void add_adjusted_skeleton_parts(flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<solarxr_protocol::application::rpc::SkeletonPart>>> adjusted_skeleton_parts) {
     fbb_.AddOffset(AutoBoneEpochResponse::VT_ADJUSTED_SKELETON_PARTS, adjusted_skeleton_parts);
   }
   explicit AutoBoneEpochResponseBuilder(flatbuffers::FlatBufferBuilder &_fbb)
@@ -4793,7 +5975,7 @@ inline flatbuffers::Offset<AutoBoneEpochResponse> CreateAutoBoneEpochResponse(
     uint32_t current_epoch = 0,
     uint32_t total_epochs = 0,
     float epoch_error = 0.0f,
-    flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<solarxr_protocol::rpc::SkeletonPart>>> adjusted_skeleton_parts = 0) {
+    flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<solarxr_protocol::application::rpc::SkeletonPart>>> adjusted_skeleton_parts = 0) {
   AutoBoneEpochResponseBuilder builder_(_fbb);
   builder_.add_adjusted_skeleton_parts(adjusted_skeleton_parts);
   builder_.add_epoch_error(epoch_error);
@@ -4807,9 +5989,9 @@ inline flatbuffers::Offset<AutoBoneEpochResponse> CreateAutoBoneEpochResponseDir
     uint32_t current_epoch = 0,
     uint32_t total_epochs = 0,
     float epoch_error = 0.0f,
-    const std::vector<flatbuffers::Offset<solarxr_protocol::rpc::SkeletonPart>> *adjusted_skeleton_parts = nullptr) {
-  auto adjusted_skeleton_parts__ = adjusted_skeleton_parts ? _fbb.CreateVector<flatbuffers::Offset<solarxr_protocol::rpc::SkeletonPart>>(*adjusted_skeleton_parts) : 0;
-  return solarxr_protocol::rpc::CreateAutoBoneEpochResponse(
+    const std::vector<flatbuffers::Offset<solarxr_protocol::application::rpc::SkeletonPart>> *adjusted_skeleton_parts = nullptr) {
+  auto adjusted_skeleton_parts__ = adjusted_skeleton_parts ? _fbb.CreateVector<flatbuffers::Offset<solarxr_protocol::application::rpc::SkeletonPart>>(*adjusted_skeleton_parts) : 0;
+  return solarxr_protocol::application::rpc::CreateAutoBoneEpochResponse(
       _fbb,
       current_epoch,
       total_epochs,
@@ -4951,6 +6133,161 @@ inline flatbuffers::Offset<OverlayDisplayModeResponse> CreateOverlayDisplayModeR
   return builder_.Finish();
 }
 
+struct DetectedDevice FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
+  typedef DetectedDeviceBuilder Builder;
+  enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
+    VT_INFOS = 4,
+    VT_MAC_ADDRESS = 6
+  };
+  const solarxr_protocol::device::pairing::PairingInfo *infos() const {
+    return GetPointer<const solarxr_protocol::device::pairing::PairingInfo *>(VT_INFOS);
+  }
+  const solarxr_protocol::datatypes::hardware_info::HardwareAddress *mac_address() const {
+    return GetStruct<const solarxr_protocol::datatypes::hardware_info::HardwareAddress *>(VT_MAC_ADDRESS);
+  }
+  bool Verify(flatbuffers::Verifier &verifier) const {
+    return VerifyTableStart(verifier) &&
+           VerifyOffset(verifier, VT_INFOS) &&
+           verifier.VerifyTable(infos()) &&
+           VerifyField<solarxr_protocol::datatypes::hardware_info::HardwareAddress>(verifier, VT_MAC_ADDRESS, 8) &&
+           verifier.EndTable();
+  }
+};
+
+struct DetectedDeviceBuilder {
+  typedef DetectedDevice Table;
+  flatbuffers::FlatBufferBuilder &fbb_;
+  flatbuffers::uoffset_t start_;
+  void add_infos(flatbuffers::Offset<solarxr_protocol::device::pairing::PairingInfo> infos) {
+    fbb_.AddOffset(DetectedDevice::VT_INFOS, infos);
+  }
+  void add_mac_address(const solarxr_protocol::datatypes::hardware_info::HardwareAddress *mac_address) {
+    fbb_.AddStruct(DetectedDevice::VT_MAC_ADDRESS, mac_address);
+  }
+  explicit DetectedDeviceBuilder(flatbuffers::FlatBufferBuilder &_fbb)
+        : fbb_(_fbb) {
+    start_ = fbb_.StartTable();
+  }
+  flatbuffers::Offset<DetectedDevice> Finish() {
+    const auto end = fbb_.EndTable(start_);
+    auto o = flatbuffers::Offset<DetectedDevice>(end);
+    return o;
+  }
+};
+
+inline flatbuffers::Offset<DetectedDevice> CreateDetectedDevice(
+    flatbuffers::FlatBufferBuilder &_fbb,
+    flatbuffers::Offset<solarxr_protocol::device::pairing::PairingInfo> infos = 0,
+    const solarxr_protocol::datatypes::hardware_info::HardwareAddress *mac_address = nullptr) {
+  DetectedDeviceBuilder builder_(_fbb);
+  builder_.add_mac_address(mac_address);
+  builder_.add_infos(infos);
+  return builder_.Finish();
+}
+
+struct DetectedDevicesRequest FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
+  typedef DetectedDevicesRequestBuilder Builder;
+  enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
+    VT_DEVICES = 4
+  };
+  const flatbuffers::Vector<flatbuffers::Offset<solarxr_protocol::application::rpc::DetectedDevice>> *devices() const {
+    return GetPointer<const flatbuffers::Vector<flatbuffers::Offset<solarxr_protocol::application::rpc::DetectedDevice>> *>(VT_DEVICES);
+  }
+  bool Verify(flatbuffers::Verifier &verifier) const {
+    return VerifyTableStart(verifier) &&
+           VerifyOffset(verifier, VT_DEVICES) &&
+           verifier.VerifyVector(devices()) &&
+           verifier.VerifyVectorOfTables(devices()) &&
+           verifier.EndTable();
+  }
+};
+
+struct DetectedDevicesRequestBuilder {
+  typedef DetectedDevicesRequest Table;
+  flatbuffers::FlatBufferBuilder &fbb_;
+  flatbuffers::uoffset_t start_;
+  void add_devices(flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<solarxr_protocol::application::rpc::DetectedDevice>>> devices) {
+    fbb_.AddOffset(DetectedDevicesRequest::VT_DEVICES, devices);
+  }
+  explicit DetectedDevicesRequestBuilder(flatbuffers::FlatBufferBuilder &_fbb)
+        : fbb_(_fbb) {
+    start_ = fbb_.StartTable();
+  }
+  flatbuffers::Offset<DetectedDevicesRequest> Finish() {
+    const auto end = fbb_.EndTable(start_);
+    auto o = flatbuffers::Offset<DetectedDevicesRequest>(end);
+    return o;
+  }
+};
+
+inline flatbuffers::Offset<DetectedDevicesRequest> CreateDetectedDevicesRequest(
+    flatbuffers::FlatBufferBuilder &_fbb,
+    flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<solarxr_protocol::application::rpc::DetectedDevice>>> devices = 0) {
+  DetectedDevicesRequestBuilder builder_(_fbb);
+  builder_.add_devices(devices);
+  return builder_.Finish();
+}
+
+inline flatbuffers::Offset<DetectedDevicesRequest> CreateDetectedDevicesRequestDirect(
+    flatbuffers::FlatBufferBuilder &_fbb,
+    const std::vector<flatbuffers::Offset<solarxr_protocol::application::rpc::DetectedDevice>> *devices = nullptr) {
+  auto devices__ = devices ? _fbb.CreateVector<flatbuffers::Offset<solarxr_protocol::application::rpc::DetectedDevice>>(*devices) : 0;
+  return solarxr_protocol::application::rpc::CreateDetectedDevicesRequest(
+      _fbb,
+      devices__);
+}
+
+struct PairDeviceRequest FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
+  typedef PairDeviceRequestBuilder Builder;
+  enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
+    VT_PAIR = 4,
+    VT_MAC_ADDRESS = 6
+  };
+  bool pair() const {
+    return GetField<uint8_t>(VT_PAIR, 0) != 0;
+  }
+  const solarxr_protocol::datatypes::hardware_info::HardwareAddress *mac_address() const {
+    return GetStruct<const solarxr_protocol::datatypes::hardware_info::HardwareAddress *>(VT_MAC_ADDRESS);
+  }
+  bool Verify(flatbuffers::Verifier &verifier) const {
+    return VerifyTableStart(verifier) &&
+           VerifyField<uint8_t>(verifier, VT_PAIR, 1) &&
+           VerifyField<solarxr_protocol::datatypes::hardware_info::HardwareAddress>(verifier, VT_MAC_ADDRESS, 8) &&
+           verifier.EndTable();
+  }
+};
+
+struct PairDeviceRequestBuilder {
+  typedef PairDeviceRequest Table;
+  flatbuffers::FlatBufferBuilder &fbb_;
+  flatbuffers::uoffset_t start_;
+  void add_pair(bool pair) {
+    fbb_.AddElement<uint8_t>(PairDeviceRequest::VT_PAIR, static_cast<uint8_t>(pair), 0);
+  }
+  void add_mac_address(const solarxr_protocol::datatypes::hardware_info::HardwareAddress *mac_address) {
+    fbb_.AddStruct(PairDeviceRequest::VT_MAC_ADDRESS, mac_address);
+  }
+  explicit PairDeviceRequestBuilder(flatbuffers::FlatBufferBuilder &_fbb)
+        : fbb_(_fbb) {
+    start_ = fbb_.StartTable();
+  }
+  flatbuffers::Offset<PairDeviceRequest> Finish() {
+    const auto end = fbb_.EndTable(start_);
+    auto o = flatbuffers::Offset<PairDeviceRequest>(end);
+    return o;
+  }
+};
+
+inline flatbuffers::Offset<PairDeviceRequest> CreatePairDeviceRequest(
+    flatbuffers::FlatBufferBuilder &_fbb,
+    bool pair = false,
+    const solarxr_protocol::datatypes::hardware_info::HardwareAddress *mac_address = nullptr) {
+  PairDeviceRequestBuilder builder_(_fbb);
+  builder_.add_mac_address(mac_address);
+  builder_.add_pair(pair);
+  return builder_.Finish();
+}
+
 }  // namespace rpc
 
 namespace pub_sub {
@@ -5038,7 +6375,7 @@ inline flatbuffers::Offset<TopicId> CreateTopicIdDirect(
   auto organization__ = organization ? _fbb.CreateString(organization) : 0;
   auto app_name__ = app_name ? _fbb.CreateString(app_name) : 0;
   auto topic__ = topic ? _fbb.CreateString(topic) : 0;
-  return solarxr_protocol::pub_sub::CreateTopicId(
+  return solarxr_protocol::application::pub_sub::CreateTopicId(
       _fbb,
       organization__,
       app_name__,
@@ -5095,11 +6432,11 @@ struct TopicMapping FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
     VT_ID = 4,
     VT_HANDLE = 6
   };
-  const solarxr_protocol::pub_sub::TopicId *id() const {
-    return GetPointer<const solarxr_protocol::pub_sub::TopicId *>(VT_ID);
+  const solarxr_protocol::application::pub_sub::TopicId *id() const {
+    return GetPointer<const solarxr_protocol::application::pub_sub::TopicId *>(VT_ID);
   }
-  const solarxr_protocol::pub_sub::TopicHandle *handle() const {
-    return GetPointer<const solarxr_protocol::pub_sub::TopicHandle *>(VT_HANDLE);
+  const solarxr_protocol::application::pub_sub::TopicHandle *handle() const {
+    return GetPointer<const solarxr_protocol::application::pub_sub::TopicHandle *>(VT_HANDLE);
   }
   bool Verify(flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
@@ -5115,10 +6452,10 @@ struct TopicMappingBuilder {
   typedef TopicMapping Table;
   flatbuffers::FlatBufferBuilder &fbb_;
   flatbuffers::uoffset_t start_;
-  void add_id(flatbuffers::Offset<solarxr_protocol::pub_sub::TopicId> id) {
+  void add_id(flatbuffers::Offset<solarxr_protocol::application::pub_sub::TopicId> id) {
     fbb_.AddOffset(TopicMapping::VT_ID, id);
   }
-  void add_handle(flatbuffers::Offset<solarxr_protocol::pub_sub::TopicHandle> handle) {
+  void add_handle(flatbuffers::Offset<solarxr_protocol::application::pub_sub::TopicHandle> handle) {
     fbb_.AddOffset(TopicMapping::VT_HANDLE, handle);
   }
   explicit TopicMappingBuilder(flatbuffers::FlatBufferBuilder &_fbb)
@@ -5134,8 +6471,8 @@ struct TopicMappingBuilder {
 
 inline flatbuffers::Offset<TopicMapping> CreateTopicMapping(
     flatbuffers::FlatBufferBuilder &_fbb,
-    flatbuffers::Offset<solarxr_protocol::pub_sub::TopicId> id = 0,
-    flatbuffers::Offset<solarxr_protocol::pub_sub::TopicHandle> handle = 0) {
+    flatbuffers::Offset<solarxr_protocol::application::pub_sub::TopicId> id = 0,
+    flatbuffers::Offset<solarxr_protocol::application::pub_sub::TopicHandle> handle = 0) {
   TopicMappingBuilder builder_(_fbb);
   builder_.add_handle(handle);
   builder_.add_id(id);
@@ -5149,8 +6486,8 @@ struct TopicHandleRequest FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
   enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
     VT_ID = 4
   };
-  const solarxr_protocol::pub_sub::TopicId *id() const {
-    return GetPointer<const solarxr_protocol::pub_sub::TopicId *>(VT_ID);
+  const solarxr_protocol::application::pub_sub::TopicId *id() const {
+    return GetPointer<const solarxr_protocol::application::pub_sub::TopicId *>(VT_ID);
   }
   bool Verify(flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
@@ -5164,7 +6501,7 @@ struct TopicHandleRequestBuilder {
   typedef TopicHandleRequest Table;
   flatbuffers::FlatBufferBuilder &fbb_;
   flatbuffers::uoffset_t start_;
-  void add_id(flatbuffers::Offset<solarxr_protocol::pub_sub::TopicId> id) {
+  void add_id(flatbuffers::Offset<solarxr_protocol::application::pub_sub::TopicId> id) {
     fbb_.AddOffset(TopicHandleRequest::VT_ID, id);
   }
   explicit TopicHandleRequestBuilder(flatbuffers::FlatBufferBuilder &_fbb)
@@ -5180,7 +6517,7 @@ struct TopicHandleRequestBuilder {
 
 inline flatbuffers::Offset<TopicHandleRequest> CreateTopicHandleRequest(
     flatbuffers::FlatBufferBuilder &_fbb,
-    flatbuffers::Offset<solarxr_protocol::pub_sub::TopicId> id = 0) {
+    flatbuffers::Offset<solarxr_protocol::application::pub_sub::TopicId> id = 0) {
   TopicHandleRequestBuilder builder_(_fbb);
   builder_.add_id(id);
   return builder_.Finish();
@@ -5193,18 +6530,18 @@ struct SubscriptionRequest FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table 
     VT_TOPIC_TYPE = 4,
     VT_TOPIC = 6
   };
-  solarxr_protocol::pub_sub::Topic topic_type() const {
-    return static_cast<solarxr_protocol::pub_sub::Topic>(GetField<uint8_t>(VT_TOPIC_TYPE, 0));
+  solarxr_protocol::application::pub_sub::Topic topic_type() const {
+    return static_cast<solarxr_protocol::application::pub_sub::Topic>(GetField<uint8_t>(VT_TOPIC_TYPE, 0));
   }
   const void *topic() const {
     return GetPointer<const void *>(VT_TOPIC);
   }
   template<typename T> const T *topic_as() const;
-  const solarxr_protocol::pub_sub::TopicHandle *topic_as_TopicHandle() const {
-    return topic_type() == solarxr_protocol::pub_sub::Topic::TopicHandle ? static_cast<const solarxr_protocol::pub_sub::TopicHandle *>(topic()) : nullptr;
+  const solarxr_protocol::application::pub_sub::TopicHandle *topic_as_TopicHandle() const {
+    return topic_type() == solarxr_protocol::application::pub_sub::Topic::TopicHandle ? static_cast<const solarxr_protocol::application::pub_sub::TopicHandle *>(topic()) : nullptr;
   }
-  const solarxr_protocol::pub_sub::TopicId *topic_as_TopicId() const {
-    return topic_type() == solarxr_protocol::pub_sub::Topic::TopicId ? static_cast<const solarxr_protocol::pub_sub::TopicId *>(topic()) : nullptr;
+  const solarxr_protocol::application::pub_sub::TopicId *topic_as_TopicId() const {
+    return topic_type() == solarxr_protocol::application::pub_sub::Topic::TopicId ? static_cast<const solarxr_protocol::application::pub_sub::TopicId *>(topic()) : nullptr;
   }
   bool Verify(flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
@@ -5215,11 +6552,11 @@ struct SubscriptionRequest FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table 
   }
 };
 
-template<> inline const solarxr_protocol::pub_sub::TopicHandle *SubscriptionRequest::topic_as<solarxr_protocol::pub_sub::TopicHandle>() const {
+template<> inline const solarxr_protocol::application::pub_sub::TopicHandle *SubscriptionRequest::topic_as<solarxr_protocol::application::pub_sub::TopicHandle>() const {
   return topic_as_TopicHandle();
 }
 
-template<> inline const solarxr_protocol::pub_sub::TopicId *SubscriptionRequest::topic_as<solarxr_protocol::pub_sub::TopicId>() const {
+template<> inline const solarxr_protocol::application::pub_sub::TopicId *SubscriptionRequest::topic_as<solarxr_protocol::application::pub_sub::TopicId>() const {
   return topic_as_TopicId();
 }
 
@@ -5227,7 +6564,7 @@ struct SubscriptionRequestBuilder {
   typedef SubscriptionRequest Table;
   flatbuffers::FlatBufferBuilder &fbb_;
   flatbuffers::uoffset_t start_;
-  void add_topic_type(solarxr_protocol::pub_sub::Topic topic_type) {
+  void add_topic_type(solarxr_protocol::application::pub_sub::Topic topic_type) {
     fbb_.AddElement<uint8_t>(SubscriptionRequest::VT_TOPIC_TYPE, static_cast<uint8_t>(topic_type), 0);
   }
   void add_topic(flatbuffers::Offset<void> topic) {
@@ -5246,7 +6583,7 @@ struct SubscriptionRequestBuilder {
 
 inline flatbuffers::Offset<SubscriptionRequest> CreateSubscriptionRequest(
     flatbuffers::FlatBufferBuilder &_fbb,
-    solarxr_protocol::pub_sub::Topic topic_type = solarxr_protocol::pub_sub::Topic::NONE,
+    solarxr_protocol::application::pub_sub::Topic topic_type = solarxr_protocol::application::pub_sub::Topic::NONE,
     flatbuffers::Offset<void> topic = 0) {
   SubscriptionRequestBuilder builder_(_fbb);
   builder_.add_topic(topic);
@@ -5260,24 +6597,24 @@ struct PubSubHeader FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
     VT_U_TYPE = 4,
     VT_U = 6
   };
-  solarxr_protocol::pub_sub::PubSubUnion u_type() const {
-    return static_cast<solarxr_protocol::pub_sub::PubSubUnion>(GetField<uint8_t>(VT_U_TYPE, 0));
+  solarxr_protocol::application::pub_sub::PubSubUnion u_type() const {
+    return static_cast<solarxr_protocol::application::pub_sub::PubSubUnion>(GetField<uint8_t>(VT_U_TYPE, 0));
   }
   const void *u() const {
     return GetPointer<const void *>(VT_U);
   }
   template<typename T> const T *u_as() const;
-  const solarxr_protocol::pub_sub::Message *u_as_Message() const {
-    return u_type() == solarxr_protocol::pub_sub::PubSubUnion::Message ? static_cast<const solarxr_protocol::pub_sub::Message *>(u()) : nullptr;
+  const solarxr_protocol::application::pub_sub::Message *u_as_Message() const {
+    return u_type() == solarxr_protocol::application::pub_sub::PubSubUnion::Message ? static_cast<const solarxr_protocol::application::pub_sub::Message *>(u()) : nullptr;
   }
-  const solarxr_protocol::pub_sub::SubscriptionRequest *u_as_SubscriptionRequest() const {
-    return u_type() == solarxr_protocol::pub_sub::PubSubUnion::SubscriptionRequest ? static_cast<const solarxr_protocol::pub_sub::SubscriptionRequest *>(u()) : nullptr;
+  const solarxr_protocol::application::pub_sub::SubscriptionRequest *u_as_SubscriptionRequest() const {
+    return u_type() == solarxr_protocol::application::pub_sub::PubSubUnion::SubscriptionRequest ? static_cast<const solarxr_protocol::application::pub_sub::SubscriptionRequest *>(u()) : nullptr;
   }
-  const solarxr_protocol::pub_sub::TopicHandleRequest *u_as_TopicHandleRequest() const {
-    return u_type() == solarxr_protocol::pub_sub::PubSubUnion::TopicHandleRequest ? static_cast<const solarxr_protocol::pub_sub::TopicHandleRequest *>(u()) : nullptr;
+  const solarxr_protocol::application::pub_sub::TopicHandleRequest *u_as_TopicHandleRequest() const {
+    return u_type() == solarxr_protocol::application::pub_sub::PubSubUnion::TopicHandleRequest ? static_cast<const solarxr_protocol::application::pub_sub::TopicHandleRequest *>(u()) : nullptr;
   }
-  const solarxr_protocol::pub_sub::TopicMapping *u_as_TopicMapping() const {
-    return u_type() == solarxr_protocol::pub_sub::PubSubUnion::TopicMapping ? static_cast<const solarxr_protocol::pub_sub::TopicMapping *>(u()) : nullptr;
+  const solarxr_protocol::application::pub_sub::TopicMapping *u_as_TopicMapping() const {
+    return u_type() == solarxr_protocol::application::pub_sub::PubSubUnion::TopicMapping ? static_cast<const solarxr_protocol::application::pub_sub::TopicMapping *>(u()) : nullptr;
   }
   bool Verify(flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
@@ -5288,19 +6625,19 @@ struct PubSubHeader FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
   }
 };
 
-template<> inline const solarxr_protocol::pub_sub::Message *PubSubHeader::u_as<solarxr_protocol::pub_sub::Message>() const {
+template<> inline const solarxr_protocol::application::pub_sub::Message *PubSubHeader::u_as<solarxr_protocol::application::pub_sub::Message>() const {
   return u_as_Message();
 }
 
-template<> inline const solarxr_protocol::pub_sub::SubscriptionRequest *PubSubHeader::u_as<solarxr_protocol::pub_sub::SubscriptionRequest>() const {
+template<> inline const solarxr_protocol::application::pub_sub::SubscriptionRequest *PubSubHeader::u_as<solarxr_protocol::application::pub_sub::SubscriptionRequest>() const {
   return u_as_SubscriptionRequest();
 }
 
-template<> inline const solarxr_protocol::pub_sub::TopicHandleRequest *PubSubHeader::u_as<solarxr_protocol::pub_sub::TopicHandleRequest>() const {
+template<> inline const solarxr_protocol::application::pub_sub::TopicHandleRequest *PubSubHeader::u_as<solarxr_protocol::application::pub_sub::TopicHandleRequest>() const {
   return u_as_TopicHandleRequest();
 }
 
-template<> inline const solarxr_protocol::pub_sub::TopicMapping *PubSubHeader::u_as<solarxr_protocol::pub_sub::TopicMapping>() const {
+template<> inline const solarxr_protocol::application::pub_sub::TopicMapping *PubSubHeader::u_as<solarxr_protocol::application::pub_sub::TopicMapping>() const {
   return u_as_TopicMapping();
 }
 
@@ -5308,7 +6645,7 @@ struct PubSubHeaderBuilder {
   typedef PubSubHeader Table;
   flatbuffers::FlatBufferBuilder &fbb_;
   flatbuffers::uoffset_t start_;
-  void add_u_type(solarxr_protocol::pub_sub::PubSubUnion u_type) {
+  void add_u_type(solarxr_protocol::application::pub_sub::PubSubUnion u_type) {
     fbb_.AddElement<uint8_t>(PubSubHeader::VT_U_TYPE, static_cast<uint8_t>(u_type), 0);
   }
   void add_u(flatbuffers::Offset<void> u) {
@@ -5327,7 +6664,7 @@ struct PubSubHeaderBuilder {
 
 inline flatbuffers::Offset<PubSubHeader> CreatePubSubHeader(
     flatbuffers::FlatBufferBuilder &_fbb,
-    solarxr_protocol::pub_sub::PubSubUnion u_type = solarxr_protocol::pub_sub::PubSubUnion::NONE,
+    solarxr_protocol::application::pub_sub::PubSubUnion u_type = solarxr_protocol::application::pub_sub::PubSubUnion::NONE,
     flatbuffers::Offset<void> u = 0) {
   PubSubHeaderBuilder builder_(_fbb);
   builder_.add_u(u);
@@ -5344,34 +6681,34 @@ struct Message FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
     VT_PAYLOAD_TYPE = 8,
     VT_PAYLOAD = 10
   };
-  solarxr_protocol::pub_sub::Topic topic_type() const {
-    return static_cast<solarxr_protocol::pub_sub::Topic>(GetField<uint8_t>(VT_TOPIC_TYPE, 0));
+  solarxr_protocol::application::pub_sub::Topic topic_type() const {
+    return static_cast<solarxr_protocol::application::pub_sub::Topic>(GetField<uint8_t>(VT_TOPIC_TYPE, 0));
   }
   const void *topic() const {
     return GetPointer<const void *>(VT_TOPIC);
   }
   template<typename T> const T *topic_as() const;
-  const solarxr_protocol::pub_sub::TopicHandle *topic_as_TopicHandle() const {
-    return topic_type() == solarxr_protocol::pub_sub::Topic::TopicHandle ? static_cast<const solarxr_protocol::pub_sub::TopicHandle *>(topic()) : nullptr;
+  const solarxr_protocol::application::pub_sub::TopicHandle *topic_as_TopicHandle() const {
+    return topic_type() == solarxr_protocol::application::pub_sub::Topic::TopicHandle ? static_cast<const solarxr_protocol::application::pub_sub::TopicHandle *>(topic()) : nullptr;
   }
-  const solarxr_protocol::pub_sub::TopicId *topic_as_TopicId() const {
-    return topic_type() == solarxr_protocol::pub_sub::Topic::TopicId ? static_cast<const solarxr_protocol::pub_sub::TopicId *>(topic()) : nullptr;
+  const solarxr_protocol::application::pub_sub::TopicId *topic_as_TopicId() const {
+    return topic_type() == solarxr_protocol::application::pub_sub::Topic::TopicId ? static_cast<const solarxr_protocol::application::pub_sub::TopicId *>(topic()) : nullptr;
   }
-  solarxr_protocol::pub_sub::Payload payload_type() const {
-    return static_cast<solarxr_protocol::pub_sub::Payload>(GetField<uint8_t>(VT_PAYLOAD_TYPE, 0));
+  solarxr_protocol::application::pub_sub::Payload payload_type() const {
+    return static_cast<solarxr_protocol::application::pub_sub::Payload>(GetField<uint8_t>(VT_PAYLOAD_TYPE, 0));
   }
   const void *payload() const {
     return GetPointer<const void *>(VT_PAYLOAD);
   }
   template<typename T> const T *payload_as() const;
   const solarxr_protocol::datatypes::StringTable *payload_as_solarxr_protocol_datatypes_StringTable() const {
-    return payload_type() == solarxr_protocol::pub_sub::Payload::solarxr_protocol_datatypes_StringTable ? static_cast<const solarxr_protocol::datatypes::StringTable *>(payload()) : nullptr;
+    return payload_type() == solarxr_protocol::application::pub_sub::Payload::solarxr_protocol_datatypes_StringTable ? static_cast<const solarxr_protocol::datatypes::StringTable *>(payload()) : nullptr;
   }
   const solarxr_protocol::datatypes::Bytes *payload_as_solarxr_protocol_datatypes_Bytes() const {
-    return payload_type() == solarxr_protocol::pub_sub::Payload::solarxr_protocol_datatypes_Bytes ? static_cast<const solarxr_protocol::datatypes::Bytes *>(payload()) : nullptr;
+    return payload_type() == solarxr_protocol::application::pub_sub::Payload::solarxr_protocol_datatypes_Bytes ? static_cast<const solarxr_protocol::datatypes::Bytes *>(payload()) : nullptr;
   }
-  const solarxr_protocol::pub_sub::KeyValues *payload_as_KeyValues() const {
-    return payload_type() == solarxr_protocol::pub_sub::Payload::KeyValues ? static_cast<const solarxr_protocol::pub_sub::KeyValues *>(payload()) : nullptr;
+  const solarxr_protocol::application::pub_sub::KeyValues *payload_as_KeyValues() const {
+    return payload_type() == solarxr_protocol::application::pub_sub::Payload::KeyValues ? static_cast<const solarxr_protocol::application::pub_sub::KeyValues *>(payload()) : nullptr;
   }
   bool Verify(flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
@@ -5385,11 +6722,11 @@ struct Message FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
   }
 };
 
-template<> inline const solarxr_protocol::pub_sub::TopicHandle *Message::topic_as<solarxr_protocol::pub_sub::TopicHandle>() const {
+template<> inline const solarxr_protocol::application::pub_sub::TopicHandle *Message::topic_as<solarxr_protocol::application::pub_sub::TopicHandle>() const {
   return topic_as_TopicHandle();
 }
 
-template<> inline const solarxr_protocol::pub_sub::TopicId *Message::topic_as<solarxr_protocol::pub_sub::TopicId>() const {
+template<> inline const solarxr_protocol::application::pub_sub::TopicId *Message::topic_as<solarxr_protocol::application::pub_sub::TopicId>() const {
   return topic_as_TopicId();
 }
 
@@ -5401,7 +6738,7 @@ template<> inline const solarxr_protocol::datatypes::Bytes *Message::payload_as<
   return payload_as_solarxr_protocol_datatypes_Bytes();
 }
 
-template<> inline const solarxr_protocol::pub_sub::KeyValues *Message::payload_as<solarxr_protocol::pub_sub::KeyValues>() const {
+template<> inline const solarxr_protocol::application::pub_sub::KeyValues *Message::payload_as<solarxr_protocol::application::pub_sub::KeyValues>() const {
   return payload_as_KeyValues();
 }
 
@@ -5409,13 +6746,13 @@ struct MessageBuilder {
   typedef Message Table;
   flatbuffers::FlatBufferBuilder &fbb_;
   flatbuffers::uoffset_t start_;
-  void add_topic_type(solarxr_protocol::pub_sub::Topic topic_type) {
+  void add_topic_type(solarxr_protocol::application::pub_sub::Topic topic_type) {
     fbb_.AddElement<uint8_t>(Message::VT_TOPIC_TYPE, static_cast<uint8_t>(topic_type), 0);
   }
   void add_topic(flatbuffers::Offset<void> topic) {
     fbb_.AddOffset(Message::VT_TOPIC, topic);
   }
-  void add_payload_type(solarxr_protocol::pub_sub::Payload payload_type) {
+  void add_payload_type(solarxr_protocol::application::pub_sub::Payload payload_type) {
     fbb_.AddElement<uint8_t>(Message::VT_PAYLOAD_TYPE, static_cast<uint8_t>(payload_type), 0);
   }
   void add_payload(flatbuffers::Offset<void> payload) {
@@ -5434,9 +6771,9 @@ struct MessageBuilder {
 
 inline flatbuffers::Offset<Message> CreateMessage(
     flatbuffers::FlatBufferBuilder &_fbb,
-    solarxr_protocol::pub_sub::Topic topic_type = solarxr_protocol::pub_sub::Topic::NONE,
+    solarxr_protocol::application::pub_sub::Topic topic_type = solarxr_protocol::application::pub_sub::Topic::NONE,
     flatbuffers::Offset<void> topic = 0,
-    solarxr_protocol::pub_sub::Payload payload_type = solarxr_protocol::pub_sub::Payload::NONE,
+    solarxr_protocol::application::pub_sub::Payload payload_type = solarxr_protocol::application::pub_sub::Payload::NONE,
     flatbuffers::Offset<void> payload = 0) {
   MessageBuilder builder_(_fbb);
   builder_.add_payload(payload);
@@ -5507,7 +6844,7 @@ inline flatbuffers::Offset<KeyValues> CreateKeyValuesDirect(
     const std::vector<flatbuffers::Offset<flatbuffers::String>> *values = nullptr) {
   auto keys__ = keys ? _fbb.CreateVector<flatbuffers::Offset<flatbuffers::String>>(*keys) : 0;
   auto values__ = values ? _fbb.CreateVector<flatbuffers::Offset<flatbuffers::String>>(*values) : 0;
-  return solarxr_protocol::pub_sub::CreateKeyValues(
+  return solarxr_protocol::application::pub_sub::CreateKeyValues(
       _fbb,
       keys__,
       values__);
@@ -5524,14 +6861,14 @@ struct MessageBundle FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
     VT_RPC_MSGS = 6,
     VT_PUB_SUB_MSGS = 8
   };
-  const flatbuffers::Vector<flatbuffers::Offset<solarxr_protocol::data_feed::DataFeedMessageHeader>> *data_feed_msgs() const {
-    return GetPointer<const flatbuffers::Vector<flatbuffers::Offset<solarxr_protocol::data_feed::DataFeedMessageHeader>> *>(VT_DATA_FEED_MSGS);
+  const flatbuffers::Vector<flatbuffers::Offset<solarxr_protocol::application::data_feed::DataFeedMessageHeader>> *data_feed_msgs() const {
+    return GetPointer<const flatbuffers::Vector<flatbuffers::Offset<solarxr_protocol::application::data_feed::DataFeedMessageHeader>> *>(VT_DATA_FEED_MSGS);
   }
-  const flatbuffers::Vector<flatbuffers::Offset<solarxr_protocol::rpc::RpcMessageHeader>> *rpc_msgs() const {
-    return GetPointer<const flatbuffers::Vector<flatbuffers::Offset<solarxr_protocol::rpc::RpcMessageHeader>> *>(VT_RPC_MSGS);
+  const flatbuffers::Vector<flatbuffers::Offset<solarxr_protocol::application::rpc::RpcMessageHeader>> *rpc_msgs() const {
+    return GetPointer<const flatbuffers::Vector<flatbuffers::Offset<solarxr_protocol::application::rpc::RpcMessageHeader>> *>(VT_RPC_MSGS);
   }
-  const flatbuffers::Vector<flatbuffers::Offset<solarxr_protocol::pub_sub::PubSubHeader>> *pub_sub_msgs() const {
-    return GetPointer<const flatbuffers::Vector<flatbuffers::Offset<solarxr_protocol::pub_sub::PubSubHeader>> *>(VT_PUB_SUB_MSGS);
+  const flatbuffers::Vector<flatbuffers::Offset<solarxr_protocol::application::pub_sub::PubSubHeader>> *pub_sub_msgs() const {
+    return GetPointer<const flatbuffers::Vector<flatbuffers::Offset<solarxr_protocol::application::pub_sub::PubSubHeader>> *>(VT_PUB_SUB_MSGS);
   }
   bool Verify(flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
@@ -5552,13 +6889,13 @@ struct MessageBundleBuilder {
   typedef MessageBundle Table;
   flatbuffers::FlatBufferBuilder &fbb_;
   flatbuffers::uoffset_t start_;
-  void add_data_feed_msgs(flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<solarxr_protocol::data_feed::DataFeedMessageHeader>>> data_feed_msgs) {
+  void add_data_feed_msgs(flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<solarxr_protocol::application::data_feed::DataFeedMessageHeader>>> data_feed_msgs) {
     fbb_.AddOffset(MessageBundle::VT_DATA_FEED_MSGS, data_feed_msgs);
   }
-  void add_rpc_msgs(flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<solarxr_protocol::rpc::RpcMessageHeader>>> rpc_msgs) {
+  void add_rpc_msgs(flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<solarxr_protocol::application::rpc::RpcMessageHeader>>> rpc_msgs) {
     fbb_.AddOffset(MessageBundle::VT_RPC_MSGS, rpc_msgs);
   }
-  void add_pub_sub_msgs(flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<solarxr_protocol::pub_sub::PubSubHeader>>> pub_sub_msgs) {
+  void add_pub_sub_msgs(flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<solarxr_protocol::application::pub_sub::PubSubHeader>>> pub_sub_msgs) {
     fbb_.AddOffset(MessageBundle::VT_PUB_SUB_MSGS, pub_sub_msgs);
   }
   explicit MessageBundleBuilder(flatbuffers::FlatBufferBuilder &_fbb)
@@ -5574,9 +6911,9 @@ struct MessageBundleBuilder {
 
 inline flatbuffers::Offset<MessageBundle> CreateMessageBundle(
     flatbuffers::FlatBufferBuilder &_fbb,
-    flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<solarxr_protocol::data_feed::DataFeedMessageHeader>>> data_feed_msgs = 0,
-    flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<solarxr_protocol::rpc::RpcMessageHeader>>> rpc_msgs = 0,
-    flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<solarxr_protocol::pub_sub::PubSubHeader>>> pub_sub_msgs = 0) {
+    flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<solarxr_protocol::application::data_feed::DataFeedMessageHeader>>> data_feed_msgs = 0,
+    flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<solarxr_protocol::application::rpc::RpcMessageHeader>>> rpc_msgs = 0,
+    flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<solarxr_protocol::application::pub_sub::PubSubHeader>>> pub_sub_msgs = 0) {
   MessageBundleBuilder builder_(_fbb);
   builder_.add_pub_sub_msgs(pub_sub_msgs);
   builder_.add_rpc_msgs(rpc_msgs);
@@ -5586,18 +6923,20 @@ inline flatbuffers::Offset<MessageBundle> CreateMessageBundle(
 
 inline flatbuffers::Offset<MessageBundle> CreateMessageBundleDirect(
     flatbuffers::FlatBufferBuilder &_fbb,
-    const std::vector<flatbuffers::Offset<solarxr_protocol::data_feed::DataFeedMessageHeader>> *data_feed_msgs = nullptr,
-    const std::vector<flatbuffers::Offset<solarxr_protocol::rpc::RpcMessageHeader>> *rpc_msgs = nullptr,
-    const std::vector<flatbuffers::Offset<solarxr_protocol::pub_sub::PubSubHeader>> *pub_sub_msgs = nullptr) {
-  auto data_feed_msgs__ = data_feed_msgs ? _fbb.CreateVector<flatbuffers::Offset<solarxr_protocol::data_feed::DataFeedMessageHeader>>(*data_feed_msgs) : 0;
-  auto rpc_msgs__ = rpc_msgs ? _fbb.CreateVector<flatbuffers::Offset<solarxr_protocol::rpc::RpcMessageHeader>>(*rpc_msgs) : 0;
-  auto pub_sub_msgs__ = pub_sub_msgs ? _fbb.CreateVector<flatbuffers::Offset<solarxr_protocol::pub_sub::PubSubHeader>>(*pub_sub_msgs) : 0;
-  return solarxr_protocol::CreateMessageBundle(
+    const std::vector<flatbuffers::Offset<solarxr_protocol::application::data_feed::DataFeedMessageHeader>> *data_feed_msgs = nullptr,
+    const std::vector<flatbuffers::Offset<solarxr_protocol::application::rpc::RpcMessageHeader>> *rpc_msgs = nullptr,
+    const std::vector<flatbuffers::Offset<solarxr_protocol::application::pub_sub::PubSubHeader>> *pub_sub_msgs = nullptr) {
+  auto data_feed_msgs__ = data_feed_msgs ? _fbb.CreateVector<flatbuffers::Offset<solarxr_protocol::application::data_feed::DataFeedMessageHeader>>(*data_feed_msgs) : 0;
+  auto rpc_msgs__ = rpc_msgs ? _fbb.CreateVector<flatbuffers::Offset<solarxr_protocol::application::rpc::RpcMessageHeader>>(*rpc_msgs) : 0;
+  auto pub_sub_msgs__ = pub_sub_msgs ? _fbb.CreateVector<flatbuffers::Offset<solarxr_protocol::application::pub_sub::PubSubHeader>>(*pub_sub_msgs) : 0;
+  return solarxr_protocol::application::CreateMessageBundle(
       _fbb,
       data_feed_msgs__,
       rpc_msgs__,
       pub_sub_msgs__);
 }
+
+}  // namespace application
 
 namespace datatypes {
 
@@ -5606,6 +6945,18 @@ namespace hardware_info {
 }  // namespace hardware_info
 }  // namespace datatypes
 
+namespace device {
+namespace pairing {
+
+}  // namespace pairing
+
+namespace packets {
+
+}  // namespace packets
+
+}  // namespace device
+
+namespace application {
 namespace data_feed {
 namespace tracker {
 
@@ -5628,6 +6979,91 @@ namespace pub_sub {
 
 }  // namespace pub_sub
 
+}  // namespace application
+
+namespace device {
+
+inline bool VerifyServerBoundMessage(flatbuffers::Verifier &verifier, const void *obj, ServerBoundMessage type) {
+  switch (type) {
+    case ServerBoundMessage::NONE: {
+      return true;
+    }
+    case ServerBoundMessage::solarxr_protocol_device_pairing_PairingInfo: {
+      auto ptr = reinterpret_cast<const solarxr_protocol::device::pairing::PairingInfo *>(obj);
+      return verifier.VerifyTable(ptr);
+    }
+    case ServerBoundMessage::solarxr_protocol_device_pairing_PairingResponse: {
+      auto ptr = reinterpret_cast<const solarxr_protocol::device::pairing::PairingResponse *>(obj);
+      return verifier.VerifyTable(ptr);
+    }
+    case ServerBoundMessage::PingResponse: {
+      auto ptr = reinterpret_cast<const solarxr_protocol::device::PingResponse *>(obj);
+      return verifier.VerifyTable(ptr);
+    }
+    case ServerBoundMessage::solarxr_protocol_device_packets_DeviceStatus: {
+      auto ptr = reinterpret_cast<const solarxr_protocol::device::packets::DeviceStatus *>(obj);
+      return verifier.VerifyTable(ptr);
+    }
+    case ServerBoundMessage::solarxr_protocol_device_packets_ImuStatus: {
+      auto ptr = reinterpret_cast<const solarxr_protocol::device::packets::ImuStatus *>(obj);
+      return verifier.VerifyTable(ptr);
+    }
+    case ServerBoundMessage::solarxr_protocol_device_packets_ImuMovement: {
+      auto ptr = reinterpret_cast<const solarxr_protocol::device::packets::ImuMovement *>(obj);
+      return verifier.VerifyTable(ptr);
+    }
+    default: return true;
+  }
+}
+
+inline bool VerifyServerBoundMessageVector(flatbuffers::Verifier &verifier, const flatbuffers::Vector<flatbuffers::Offset<void>> *values, const flatbuffers::Vector<ServerBoundMessage> *types) {
+  if (!values || !types) return !values && !types;
+  if (values->size() != types->size()) return false;
+  for (flatbuffers::uoffset_t i = 0; i < values->size(); ++i) {
+    if (!VerifyServerBoundMessage(
+        verifier,  values->Get(i), types->GetEnum<ServerBoundMessage>(i))) {
+      return false;
+    }
+  }
+  return true;
+}
+
+inline bool VerifyDeviceBoundMessage(flatbuffers::Verifier &verifier, const void *obj, DeviceBoundMessage type) {
+  switch (type) {
+    case DeviceBoundMessage::NONE: {
+      return true;
+    }
+    case DeviceBoundMessage::solarxr_protocol_device_pairing_DiscoverRequest: {
+      auto ptr = reinterpret_cast<const solarxr_protocol::device::pairing::DiscoverRequest *>(obj);
+      return verifier.VerifyTable(ptr);
+    }
+    case DeviceBoundMessage::solarxr_protocol_device_pairing_PairingRequest: {
+      auto ptr = reinterpret_cast<const solarxr_protocol::device::pairing::PairingRequest *>(obj);
+      return verifier.VerifyTable(ptr);
+    }
+    case DeviceBoundMessage::PingRequest: {
+      auto ptr = reinterpret_cast<const solarxr_protocol::device::PingRequest *>(obj);
+      return verifier.VerifyTable(ptr);
+    }
+    default: return true;
+  }
+}
+
+inline bool VerifyDeviceBoundMessageVector(flatbuffers::Verifier &verifier, const flatbuffers::Vector<flatbuffers::Offset<void>> *values, const flatbuffers::Vector<DeviceBoundMessage> *types) {
+  if (!values || !types) return !values && !types;
+  if (values->size() != types->size()) return false;
+  for (flatbuffers::uoffset_t i = 0; i < values->size(); ++i) {
+    if (!VerifyDeviceBoundMessage(
+        verifier,  values->Get(i), types->GetEnum<DeviceBoundMessage>(i))) {
+      return false;
+    }
+  }
+  return true;
+}
+
+}  // namespace device
+
+namespace application {
 namespace data_feed {
 
 inline bool VerifyDataFeedMessage(flatbuffers::Verifier &verifier, const void *obj, DataFeedMessage type) {
@@ -5636,19 +7072,19 @@ inline bool VerifyDataFeedMessage(flatbuffers::Verifier &verifier, const void *o
       return true;
     }
     case DataFeedMessage::PollDataFeed: {
-      auto ptr = reinterpret_cast<const solarxr_protocol::data_feed::PollDataFeed *>(obj);
+      auto ptr = reinterpret_cast<const solarxr_protocol::application::data_feed::PollDataFeed *>(obj);
       return verifier.VerifyTable(ptr);
     }
     case DataFeedMessage::StartDataFeed: {
-      auto ptr = reinterpret_cast<const solarxr_protocol::data_feed::StartDataFeed *>(obj);
+      auto ptr = reinterpret_cast<const solarxr_protocol::application::data_feed::StartDataFeed *>(obj);
       return verifier.VerifyTable(ptr);
     }
     case DataFeedMessage::DataFeedUpdate: {
-      auto ptr = reinterpret_cast<const solarxr_protocol::data_feed::DataFeedUpdate *>(obj);
+      auto ptr = reinterpret_cast<const solarxr_protocol::application::data_feed::DataFeedUpdate *>(obj);
       return verifier.VerifyTable(ptr);
     }
     case DataFeedMessage::DataFeedConfig: {
-      auto ptr = reinterpret_cast<const solarxr_protocol::data_feed::DataFeedConfig *>(obj);
+      auto ptr = reinterpret_cast<const solarxr_protocol::application::data_feed::DataFeedConfig *>(obj);
       return verifier.VerifyTable(ptr);
     }
     default: return true;
@@ -5677,107 +7113,115 @@ inline bool VerifyRpcMessage(flatbuffers::Verifier &verifier, const void *obj, R
       return true;
     }
     case RpcMessage::HeartbeatRequest: {
-      auto ptr = reinterpret_cast<const solarxr_protocol::rpc::HeartbeatRequest *>(obj);
+      auto ptr = reinterpret_cast<const solarxr_protocol::application::rpc::HeartbeatRequest *>(obj);
       return verifier.VerifyTable(ptr);
     }
     case RpcMessage::HeartbeatResponse: {
-      auto ptr = reinterpret_cast<const solarxr_protocol::rpc::HeartbeatResponse *>(obj);
+      auto ptr = reinterpret_cast<const solarxr_protocol::application::rpc::HeartbeatResponse *>(obj);
       return verifier.VerifyTable(ptr);
     }
     case RpcMessage::ResetRequest: {
-      auto ptr = reinterpret_cast<const solarxr_protocol::rpc::ResetRequest *>(obj);
+      auto ptr = reinterpret_cast<const solarxr_protocol::application::rpc::ResetRequest *>(obj);
       return verifier.VerifyTable(ptr);
     }
     case RpcMessage::AssignTrackerRequest: {
-      auto ptr = reinterpret_cast<const solarxr_protocol::rpc::AssignTrackerRequest *>(obj);
+      auto ptr = reinterpret_cast<const solarxr_protocol::application::rpc::AssignTrackerRequest *>(obj);
       return verifier.VerifyTable(ptr);
     }
     case RpcMessage::SettingsRequest: {
-      auto ptr = reinterpret_cast<const solarxr_protocol::rpc::SettingsRequest *>(obj);
+      auto ptr = reinterpret_cast<const solarxr_protocol::application::rpc::SettingsRequest *>(obj);
       return verifier.VerifyTable(ptr);
     }
     case RpcMessage::SettingsResponse: {
-      auto ptr = reinterpret_cast<const solarxr_protocol::rpc::SettingsResponse *>(obj);
+      auto ptr = reinterpret_cast<const solarxr_protocol::application::rpc::SettingsResponse *>(obj);
       return verifier.VerifyTable(ptr);
     }
     case RpcMessage::ChangeSettingsRequest: {
-      auto ptr = reinterpret_cast<const solarxr_protocol::rpc::ChangeSettingsRequest *>(obj);
+      auto ptr = reinterpret_cast<const solarxr_protocol::application::rpc::ChangeSettingsRequest *>(obj);
       return verifier.VerifyTable(ptr);
     }
     case RpcMessage::RecordBVHRequest: {
-      auto ptr = reinterpret_cast<const solarxr_protocol::rpc::RecordBVHRequest *>(obj);
+      auto ptr = reinterpret_cast<const solarxr_protocol::application::rpc::RecordBVHRequest *>(obj);
       return verifier.VerifyTable(ptr);
     }
     case RpcMessage::RecordBVHStatus: {
-      auto ptr = reinterpret_cast<const solarxr_protocol::rpc::RecordBVHStatus *>(obj);
+      auto ptr = reinterpret_cast<const solarxr_protocol::application::rpc::RecordBVHStatus *>(obj);
       return verifier.VerifyTable(ptr);
     }
     case RpcMessage::SkeletonConfigRequest: {
-      auto ptr = reinterpret_cast<const solarxr_protocol::rpc::SkeletonConfigRequest *>(obj);
+      auto ptr = reinterpret_cast<const solarxr_protocol::application::rpc::SkeletonConfigRequest *>(obj);
       return verifier.VerifyTable(ptr);
     }
     case RpcMessage::ChangeSkeletonConfigRequest: {
-      auto ptr = reinterpret_cast<const solarxr_protocol::rpc::ChangeSkeletonConfigRequest *>(obj);
+      auto ptr = reinterpret_cast<const solarxr_protocol::application::rpc::ChangeSkeletonConfigRequest *>(obj);
       return verifier.VerifyTable(ptr);
     }
     case RpcMessage::SkeletonResetAllRequest: {
-      auto ptr = reinterpret_cast<const solarxr_protocol::rpc::SkeletonResetAllRequest *>(obj);
+      auto ptr = reinterpret_cast<const solarxr_protocol::application::rpc::SkeletonResetAllRequest *>(obj);
       return verifier.VerifyTable(ptr);
     }
     case RpcMessage::SkeletonConfigResponse: {
-      auto ptr = reinterpret_cast<const solarxr_protocol::rpc::SkeletonConfigResponse *>(obj);
+      auto ptr = reinterpret_cast<const solarxr_protocol::application::rpc::SkeletonConfigResponse *>(obj);
       return verifier.VerifyTable(ptr);
     }
     case RpcMessage::OpenSerialRequest: {
-      auto ptr = reinterpret_cast<const solarxr_protocol::rpc::OpenSerialRequest *>(obj);
+      auto ptr = reinterpret_cast<const solarxr_protocol::application::rpc::OpenSerialRequest *>(obj);
       return verifier.VerifyTable(ptr);
     }
     case RpcMessage::CloseSerialRequest: {
-      auto ptr = reinterpret_cast<const solarxr_protocol::rpc::CloseSerialRequest *>(obj);
+      auto ptr = reinterpret_cast<const solarxr_protocol::application::rpc::CloseSerialRequest *>(obj);
       return verifier.VerifyTable(ptr);
     }
     case RpcMessage::SetWifiRequest: {
-      auto ptr = reinterpret_cast<const solarxr_protocol::rpc::SetWifiRequest *>(obj);
+      auto ptr = reinterpret_cast<const solarxr_protocol::application::rpc::SetWifiRequest *>(obj);
       return verifier.VerifyTable(ptr);
     }
     case RpcMessage::SerialUpdateResponse: {
-      auto ptr = reinterpret_cast<const solarxr_protocol::rpc::SerialUpdateResponse *>(obj);
+      auto ptr = reinterpret_cast<const solarxr_protocol::application::rpc::SerialUpdateResponse *>(obj);
       return verifier.VerifyTable(ptr);
     }
     case RpcMessage::AutoBoneProcessRequest: {
-      auto ptr = reinterpret_cast<const solarxr_protocol::rpc::AutoBoneProcessRequest *>(obj);
+      auto ptr = reinterpret_cast<const solarxr_protocol::application::rpc::AutoBoneProcessRequest *>(obj);
       return verifier.VerifyTable(ptr);
     }
     case RpcMessage::AutoBoneProcessStatusResponse: {
-      auto ptr = reinterpret_cast<const solarxr_protocol::rpc::AutoBoneProcessStatusResponse *>(obj);
+      auto ptr = reinterpret_cast<const solarxr_protocol::application::rpc::AutoBoneProcessStatusResponse *>(obj);
       return verifier.VerifyTable(ptr);
     }
     case RpcMessage::AutoBoneEpochResponse: {
-      auto ptr = reinterpret_cast<const solarxr_protocol::rpc::AutoBoneEpochResponse *>(obj);
+      auto ptr = reinterpret_cast<const solarxr_protocol::application::rpc::AutoBoneEpochResponse *>(obj);
       return verifier.VerifyTable(ptr);
     }
     case RpcMessage::OverlayDisplayModeRequest: {
-      auto ptr = reinterpret_cast<const solarxr_protocol::rpc::OverlayDisplayModeRequest *>(obj);
+      auto ptr = reinterpret_cast<const solarxr_protocol::application::rpc::OverlayDisplayModeRequest *>(obj);
       return verifier.VerifyTable(ptr);
     }
     case RpcMessage::OverlayDisplayModeChangeRequest: {
-      auto ptr = reinterpret_cast<const solarxr_protocol::rpc::OverlayDisplayModeChangeRequest *>(obj);
+      auto ptr = reinterpret_cast<const solarxr_protocol::application::rpc::OverlayDisplayModeChangeRequest *>(obj);
       return verifier.VerifyTable(ptr);
     }
     case RpcMessage::OverlayDisplayModeResponse: {
-      auto ptr = reinterpret_cast<const solarxr_protocol::rpc::OverlayDisplayModeResponse *>(obj);
+      auto ptr = reinterpret_cast<const solarxr_protocol::application::rpc::OverlayDisplayModeResponse *>(obj);
       return verifier.VerifyTable(ptr);
     }
     case RpcMessage::SerialTrackerRebootRequest: {
-      auto ptr = reinterpret_cast<const solarxr_protocol::rpc::SerialTrackerRebootRequest *>(obj);
+      auto ptr = reinterpret_cast<const solarxr_protocol::application::rpc::SerialTrackerRebootRequest *>(obj);
       return verifier.VerifyTable(ptr);
     }
     case RpcMessage::SerialTrackerGetInfoRequest: {
-      auto ptr = reinterpret_cast<const solarxr_protocol::rpc::SerialTrackerGetInfoRequest *>(obj);
+      auto ptr = reinterpret_cast<const solarxr_protocol::application::rpc::SerialTrackerGetInfoRequest *>(obj);
       return verifier.VerifyTable(ptr);
     }
     case RpcMessage::SerialTrackerFactoryResetRequest: {
-      auto ptr = reinterpret_cast<const solarxr_protocol::rpc::SerialTrackerFactoryResetRequest *>(obj);
+      auto ptr = reinterpret_cast<const solarxr_protocol::application::rpc::SerialTrackerFactoryResetRequest *>(obj);
+      return verifier.VerifyTable(ptr);
+    }
+    case RpcMessage::DetectedDevicesRequest: {
+      auto ptr = reinterpret_cast<const solarxr_protocol::application::rpc::DetectedDevicesRequest *>(obj);
+      return verifier.VerifyTable(ptr);
+    }
+    case RpcMessage::PairDeviceRequest: {
+      auto ptr = reinterpret_cast<const solarxr_protocol::application::rpc::PairDeviceRequest *>(obj);
       return verifier.VerifyTable(ptr);
     }
     default: return true;
@@ -5806,11 +7250,11 @@ inline bool VerifyTopic(flatbuffers::Verifier &verifier, const void *obj, Topic 
       return true;
     }
     case Topic::TopicHandle: {
-      auto ptr = reinterpret_cast<const solarxr_protocol::pub_sub::TopicHandle *>(obj);
+      auto ptr = reinterpret_cast<const solarxr_protocol::application::pub_sub::TopicHandle *>(obj);
       return verifier.VerifyTable(ptr);
     }
     case Topic::TopicId: {
-      auto ptr = reinterpret_cast<const solarxr_protocol::pub_sub::TopicId *>(obj);
+      auto ptr = reinterpret_cast<const solarxr_protocol::application::pub_sub::TopicId *>(obj);
       return verifier.VerifyTable(ptr);
     }
     default: return true;
@@ -5835,19 +7279,19 @@ inline bool VerifyPubSubUnion(flatbuffers::Verifier &verifier, const void *obj, 
       return true;
     }
     case PubSubUnion::Message: {
-      auto ptr = reinterpret_cast<const solarxr_protocol::pub_sub::Message *>(obj);
+      auto ptr = reinterpret_cast<const solarxr_protocol::application::pub_sub::Message *>(obj);
       return verifier.VerifyTable(ptr);
     }
     case PubSubUnion::SubscriptionRequest: {
-      auto ptr = reinterpret_cast<const solarxr_protocol::pub_sub::SubscriptionRequest *>(obj);
+      auto ptr = reinterpret_cast<const solarxr_protocol::application::pub_sub::SubscriptionRequest *>(obj);
       return verifier.VerifyTable(ptr);
     }
     case PubSubUnion::TopicHandleRequest: {
-      auto ptr = reinterpret_cast<const solarxr_protocol::pub_sub::TopicHandleRequest *>(obj);
+      auto ptr = reinterpret_cast<const solarxr_protocol::application::pub_sub::TopicHandleRequest *>(obj);
       return verifier.VerifyTable(ptr);
     }
     case PubSubUnion::TopicMapping: {
-      auto ptr = reinterpret_cast<const solarxr_protocol::pub_sub::TopicMapping *>(obj);
+      auto ptr = reinterpret_cast<const solarxr_protocol::application::pub_sub::TopicMapping *>(obj);
       return verifier.VerifyTable(ptr);
     }
     default: return true;
@@ -5880,7 +7324,7 @@ inline bool VerifyPayload(flatbuffers::Verifier &verifier, const void *obj, Payl
       return verifier.VerifyTable(ptr);
     }
     case Payload::KeyValues: {
-      auto ptr = reinterpret_cast<const solarxr_protocol::pub_sub::KeyValues *>(obj);
+      auto ptr = reinterpret_cast<const solarxr_protocol::application::pub_sub::KeyValues *>(obj);
       return verifier.VerifyTable(ptr);
     }
     default: return true;
@@ -5900,6 +7344,7 @@ inline bool VerifyPayloadVector(flatbuffers::Verifier &verifier, const flatbuffe
 }
 
 }  // namespace pub_sub
+}  // namespace application
 }  // namespace solarxr_protocol
 
 #endif  // FLATBUFFERS_GENERATED_ALL_SOLARXR_PROTOCOL_H_

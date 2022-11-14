@@ -1,0 +1,38 @@
+include "device/pairing.fbs";
+include "device/packets.fbs";
+include "datatypes/hardware_info.fbs";
+
+
+namespace solarxr_protocol.device;
+
+union ServerBoundMessage {
+    solarxr_protocol.device.pairing.PairingInfo,
+    solarxr_protocol.device.pairing.PairingResponse,
+    PingResponse,
+    solarxr_protocol.device.packets.DeviceStatus,
+    solarxr_protocol.device.packets.ImuStatus,
+    solarxr_protocol.device.packets.ImuMovement
+}
+
+union DeviceBoundMessage {
+    solarxr_protocol.device.pairing.DiscoverRequest,
+    solarxr_protocol.device.pairing.PairingRequest,
+    PingRequest
+}
+
+table ServerBoundMessageHeader {
+    mac_address: solarxr_protocol.datatypes.hardware_info.HardwareAddress (required);
+    req_rep: ServerBoundMessage;
+}
+
+table DeviceBoundMessageHeader {
+    req_rep: DeviceBoundMessage;
+}
+
+
+/// The `PingRequest` gets sent from the server to the device
+/// which then will respond to that ping with the `PingResponse` packet.
+///
+/// Can be used to measure RTT between the server and device.
+table PingRequest {}
+table PingResponse {}
