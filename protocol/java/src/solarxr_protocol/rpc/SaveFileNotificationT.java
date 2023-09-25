@@ -8,15 +8,11 @@ import java.util.*;
 import com.google.flatbuffers.*;
 
 public class SaveFileNotificationT {
-  private int[] data;
   private String mimeType;
   private String fileExtension;
   private Integer expectedDir;
   private String expectedFilename;
-
-  public int[] getData() { return data; }
-
-  public void setData(int[] data) { this.data = data; }
+  private long id;
 
   public String getMimeType() { return mimeType; }
 
@@ -34,13 +30,17 @@ public class SaveFileNotificationT {
 
   public void setExpectedFilename(String expectedFilename) { this.expectedFilename = expectedFilename; }
 
+  public long getId() { return id; }
+
+  public void setId(long id) { this.id = id; }
+
 
   public SaveFileNotificationT() {
-    this.data = null;
     this.mimeType = null;
     this.fileExtension = null;
     this.expectedDir = null;
     this.expectedFilename = null;
+    this.id = 0L;
   }
 }
 
